@@ -6,4 +6,5 @@ export default defineConfig({
   server: {
     host: true,
   },
+  base: '/MarketGo/', // 👈 Nombre exacto de tu repo en GitHub
 })
