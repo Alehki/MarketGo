@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import './Carrusel.css';
 
+const BASE = import.meta.env.BASE_URL;
+
 const SLIDES = [
   {
     id: 1,
-    mobileImg: '/assets/Carrusel/principal.webp',
-    desktopImg: '/assets/Carrusel/banner3-desktop.webp',
+    mobileImg: `${BASE}assets/Carrusel/principal.webp`,
+    desktopImg: `${BASE}assets/Carrusel/banner3-desktop.webp`,
     title: 'Recibí tu pedido en 10–25 min',
     subtitle: 'En Hurlingham, Morris y Villa Tesei',
     contentClass: 'slide-content-1',
@@ -13,8 +15,8 @@ const SLIDES = [
   },
   {
     id: 2,
-    mobileImg: '/assets/Carrusel/principal2.webp',
-    desktopImg: '/assets/Carrusel/principal2.webp',
+    mobileImg: `${BASE}assets/Carrusel/principal2.webp`,
+    desktopImg: `${BASE}assets/Carrusel/principal2.webp`,
     badge: 'Primera compra',
     title: 'Envío gratis',
     subtitle: '+ peluche de regalo',
@@ -23,12 +25,12 @@ const SLIDES = [
   },
   {
     id: 3,
-    mobileImg: '/assets/Carrusel/principal3.webp',
-    desktopImg: '/assets/Carrusel/principal3.webp',
+    mobileImg: `${BASE}assets/Carrusel/principal3.webp`,
+    desktopImg: `${BASE}assets/Carrusel/principal3.webp`,
     title: 'Estamos cerca tuyo',
     subtitle: 'Hurlingham, Morris y Villa Tesei',
     contentClass: 'slide-content-3',
-    slideClass: 'slide-3', // Corregido para que coincida con tu CSS (.slide-3 img)
+    slideClass: 'slide-3',
   },
 ];
 

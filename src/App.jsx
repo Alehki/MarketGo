@@ -23,6 +23,9 @@ import { CardModal } from "./componentes/CardModal/CardModal.jsx";
 import { ModalProductoDetalle } from "./componentes/ModalProductoDetalle/ModalProductoDetalle.jsx";
 import { SplashScreen } from './componentes/SplashScreen/SplashScreen.jsx';
 
+const bannerPromo = `${import.meta.env.BASE_URL}bannerPromo.jpg`;
+const faviconSvg = `${import.meta.env.BASE_URL}favicon.svg`;
+
 const COMPRA_MINIMA = 5000;
 
 function App() {
@@ -52,12 +55,12 @@ function App() {
   const BANNERS_PROMO = [
     {
       id: 'nestle-week',
-      imagen: '../../bannerPromo.jpg', // O URL de imagen
+      imagen: bannerPromo, // O URL de imagen
       categoriaDestino: 'Nestlé'
     },
     {
       id: 'oreo-promo',
-      imagen: '../../favicon.svg',
+      imagen: faviconSvg,
       categoriaDestino: 'Galletitas'
     }
   ];
