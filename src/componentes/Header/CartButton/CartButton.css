@@ -1,0 +1,82 @@
+.carrito-btn {
+  border: none;
+  background: none;
+  font-size: 22px;
+  cursor: pointer;
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 4px;
+  padding: 6px;
+}
+
+.icon-cart {
+  width: 20px;
+  height: 20px;
+
+  color: var(--negro);
+  opacity: 0.9;
+
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.carrito-btn:hover .icon-cart {
+  transform: scale(1.1);
+  opacity: 1;
+}
+
+.cart-count {
+  position: absolute;
+  top: -5px;
+  right: -6px;
+
+  background: var(--amarillo-principal);
+  color: black;
+
+  font-size: 11px;
+  font-weight: bold;
+
+  padding: 3px 6px;
+  border-radius: 999px;
+}
+
+/* Opacidad */
+/* Estado opaco y bloqueado cuando no hay productos */
+.carrito-btn:disabled,
+.carrito-btn.deshabilitado {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none; /* Evita cualquier toque/clic */
+  filter: grayscale(80%);
+}
+
+/* animacion al restar */
+
+/* Animación al SUMAR: Agrandamiento muy sutil */
+.cart-count.anim-sumar {
+  animation: popAnimation 0.22s ease-out;
+}
+
+@keyframes popAnimation {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.18); } /* Crecimiento muy leve */
+  100% { transform: scale(1); }
+}
+
+/* Animación al RESTAR: Temblor lateral suave y delicado */
+.cart-count.anim-restar {
+  animation: shakeAnimation 0.25s ease-in-out;
+}
+
+@keyframes shakeAnimation {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-1.5px) rotate(-2deg); }
+  50% { transform: translateX(1.5px) rotate(2deg); }
+  75% { transform: translateX(-1px); }
+  100% { transform: translateX(0); }
+}

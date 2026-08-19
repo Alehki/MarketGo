@@ -1,0 +1,58 @@
+.seccion-categoria-home {
+  margin: 1.5rem 0;
+  padding: 0 1rem;
+}
+
+/* Header de la sección */
+.seccion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.seccion-titulo {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 0;
+}
+
+.btn-mostrar-todos {
+  background: none;
+  border: none;
+  color: #0F172A;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.btn-mostrar-todos:active {
+  opacity: 0.7;
+}
+
+/* Scroll Horizontal Nativo */
+.carrusel-horizontal-productos {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
+  
+  /* Ocultar la barra de scroll en navegadores */
+  scrollbar-width: none; /* Firefox */
+}
+
+.carrusel-horizontal-productos::-webkit-scrollbar {
+  display: none; /* Chrome, Safari y Opera */
+}
+
+/* Ancho fijo para cada tarjeta en la fila horizontal */
+.item-carrusel-producto {
+  flex: 0 0 160px; /* Ancho fijo para las cards en el carrusel */
+  scroll-snap-align: start;
+}

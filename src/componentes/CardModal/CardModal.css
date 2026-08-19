@@ -1,0 +1,224 @@
+/* ==========================================
+   ESTILOS PARA EL MODAL DE CARRITO
+   ========================================== */
+
+/* Fondo oscuro translúcido */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  /* backdrop-filter: blur(4px); */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+/* Contenedor blanco del modal */
+.modal-content {
+  background-color: #ffffff;
+  width: 100%;
+  max-width: 440px;
+  max-height: 90vh;
+  border-radius: 20px;
+  padding: 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* Botón de cerrar (✕) */
+.modal-content .cerrar {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  transition: color 0.15s ease;
+}
+
+.modal-content .cerrar:hover {
+  color: #111827;
+}
+
+/* Título */
+.modal-content .tituloCarrito {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 16px 0;
+}
+
+/* Contenedor con scroll para la lista de productos */
+.modal-content .carrito-items {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-right: 4px; /* Espacio para scrollbar */
+}
+
+/* Estado vacío */
+.modal-content .cart-vacio {
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.95rem;
+  padding: 32px 0;
+}
+
+/* ==========================================
+   ESTILOS DE CADA ITEM DE LA LISTA (CardItem)
+   ========================================== */
+
+.item-carrito {
+  position: relative;
+  width: 100%;
+  background-color: #dc2626; /* Fondo rojo visible cuando se desliza */
+  border-radius: 12px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Botón eliminar escondido detrás */
+.item-carrito .item-eliminar {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 18px;
+  cursor: pointer;
+
+  /* Agregamos los prefijos para los distintos navegadores */
+  -webkit-user-select: none; /* Safari / Chrome antiguo */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* IE / Edge antiguo */
+  user-select: none;         /* Estándar */
+}
+
+/* Capa blanca frontal que se desplaza en el Swipe */
+.item-carrito .item-contenido {
+  position: relative;
+  background-color: #f9fafb;
+  border: 1px solid #f3f4f6;
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  touch-action: pan-y; /* Permite scroll vertical pero escucha swipe horizontal */
+  z-index: 2;
+}
+
+/* Información textual del producto */
+.item-carrito .item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0; /* Permite truncar textos con ellipsis si son muy largos */
+}
+
+.item-carrito .item-info strong {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-carrito .item-info span {
+  font-size: 0.8rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* ==========================================
+   SECCIÓN DE RESUMEN Y CHECKOUT
+   ========================================== */
+
+.modal-content .resumen-carrito {
+  border-top: 1px solid #f3f4f6;
+  padding-top: 12px;
+  margin-bottom: 8px;
+}
+
+.modal-content .resumen-linea {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+/* Mensaje de aviso (mínimo de compra o cerrado) */
+.modal-content .mensaje-minimo {
+  background-color: #fef2f2;
+  color: #dc2626;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin: 4px 0 12px 0;
+}
+
+/* Subtotal destacado */
+.modal-content .total {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #111827;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+/* Botón "Ir a pagar" */
+.modal-content .btn-principal {
+  width: 100%;
+  height: 44px;
+  background-color: var(--amarillo-principal, #f5b800);
+  color: #111827;
+  border: none;
+  border-radius: var(--radius, 10px);
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.modal-content .btn-principal:active {
+  transform: scale(0.98);
+}
+
+.modal-content .btn-principal:disabled {
+  opacity: 0.55;
+  background-color: #e5e7eb;
+  color: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+}

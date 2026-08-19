@@ -1,0 +1,45 @@
+.header {
+  background-color: var(--blanco);
+  padding: 16px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  box-shadow: var(--shadow-soft);
+
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.header img {
+  width: 100%;
+  height: auto;
+}
+
+/* .contenedor-titulo-iconocarrito {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 0;
+} */
+
+/*
+Seria el .contenedor-titulo-iconocarrito que ahora es header-top. Contenedor que contiene 
+la marca y el carrito.
+*/
+.header-top{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 0;
+}
+
+
+/* 
+.header-top{
+  display: flex;
+} */

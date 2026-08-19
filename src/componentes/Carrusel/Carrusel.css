@@ -1,0 +1,145 @@
+/* ================= CARRUSEL PRO ================= */
+.carousel-wrapper {
+  width: 100%;
+  margin-top: 10px;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+.carousel-container {
+  width: 100%;
+  border-radius: var(--radius, 12px);
+  overflow: hidden;
+  position: relative;
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+  width: 100%;
+  will-change: transform;
+}
+
+.slide {
+  flex: 0 0 100%;
+  height: 150px;
+  position: relative;
+}
+
+.slide picture,
+.slide img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center 100%;
+}
+
+.slide-3 img {
+  object-position: center 30%;
+}
+
+.slide::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.slide-content {
+  position: absolute;
+  left: 22px;
+  bottom: 22px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  color: #000000;
+}
+
+.slide-content-1 {
+  color: #ffffff;
+}
+
+.slide-content-2,
+.slide-content-3 {
+  top: 40px;
+}
+
+.slide-content h3 {
+  font-size: 24px;
+  line-height: 1.05;
+  font-weight: 900;
+  letter-spacing: -1px;
+  margin: 0;
+  max-width: 190px;
+}
+
+.slide-content p {
+  font-size: 13px;
+  margin-top: 4px;
+  opacity: 0.9;
+}
+
+.badge {
+  display: inline-block;
+  background: #ffffff;
+  color: #111111;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 999px;
+  margin-bottom: 6px;
+}
+
+/* Flechas */
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.4);
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 18px;
+  border-radius: 50%;
+  transition: background 0.3s ease;
+  z-index: 3;
+}
+
+.arrow:hover {
+  background: var(--color-primary, #000);
+}
+
+.left { left: 15px; }
+.right { right: 15px; }
+
+/* Puntitos */
+.dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  opacity: 0.5;
+  background-color: #ccc;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dot.active {
+  width: 18px;
+  height: 8px;
+  border-radius: 4px;
+  opacity: 1;
+  background-color: var(--amarillo-hover, #f59e0b);
+}

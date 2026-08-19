@@ -1,0 +1,11 @@
+src/
+├── lib/
+│   └── supabaseClient.js      <-- Cliente Supabase con variables de entorno
+├── services/
+│   ├── productosService.js    <-- Lógica del catálogo
+│   └── pedidosService.js      <-- RPC, consultas y suscripciones de pedidos
+├── utils/
+│   └── cliente.js             <-- UUID fallback y LocalStorage
+└── hooks/
+    ├── useProductos.js        <-- Hook para catálogo
+    └── usePedidos.js          <-- Hook con Realtime integrado

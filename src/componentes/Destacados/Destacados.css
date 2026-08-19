@@ -1,0 +1,71 @@
+/* Contenedor relativo global */
+.seccion-destacados {
+  position: relative;
+  width: 100%;
+  padding: 16px 0;
+  overflow: hidden; /* Evita que la pantalla principal tenga scroll horizontal */
+}
+
+/* CAJA AMARILLA: Puesta como un bloque por detrás (estático) */
+.caja-amarilla-fondo {
+  position: absolute;
+  top: 16px;
+  bottom: 16px;
+  left: 16px;  /* Margen izquierdo del bloque amarillo respecto a la pantalla */
+  right: 16px; /* Margen derecho del bloque amarillo */
+  background-color: var(--amarillo-suave);
+  border-radius: 20px;
+  z-index: 1;
+}
+
+/* CAPA CONTENIDO: Flota arriba del amarillo y abarca todo el ancho */
+.capa-contenido {
+  position: relative;
+  z-index: 2;
+  padding: 20px 0;
+}
+
+.titulo-seccion {
+  font-size: 23 px;
+  font-weight: 800;
+  color: #1f2937;
+  /* 16px de la caja amarilla + 16px de margen interno = 32px para alinear perfecto */
+  margin: 0 0 16px 32px; 
+}
+
+.mensaje-estado {
+  font-size: 14px;
+  color: #1f2937;
+  margin: 0 0 12px 32px;
+}
+
+.mensaje-estado.error {
+  color: #dc2626;
+}
+
+/* CINTA DE SCROLL: Tiene vía libre total de 0 a 100% del ancho de la pantalla */
+.cinta-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  
+  /* Arranca a 32px (exactamente alineada con el título) 
+     y deja 16px al final para que la última card no se pegue al borde */
+  padding-left: 32px;
+  padding-right: 16px;
+  padding-bottom: 4px;
+
+  scroll-snap-type: x mandatory;
+  /* -webkit-overflow-scrolling: touch; */
+}
+
+.cinta-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.card-destacado {
+  min-width: 145px;
+  max-width: 145px;
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}

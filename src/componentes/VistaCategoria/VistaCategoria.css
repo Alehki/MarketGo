@@ -1,0 +1,63 @@
+.vista-categoria {
+  padding: 1rem;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.categoria-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.btn-volver {
+  background: #f1f5f9;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #0F172A;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.btn-volver:active {
+  background: #e2e8f0;
+  transform: scale(0.95);
+}
+
+.titulo-categoria {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #0F172A;
+  margin: 0;
+  text-transform: capitalize;
+}
+
+/* Grilla adaptable de productos */
+.productos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.mensaje-carga,
+.mensaje-vacio {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #64748b;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

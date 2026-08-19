@@ -1,0 +1,36 @@
+.barra-beneficios {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--amarillo-suave);
+  padding: 8px 10px;
+  border-radius: 10px;
+}
+
+.beneficio {
+  display: flex;
+  align-items: center;
+  font-size: 10px;
+  color: #374151;
+  font-weight: 600;
+}
+
+.beneficio p {
+  margin: 0;
+  line-height: 1;
+}
+
+.beneficio svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 1.8;
+  fill: none;
+  padding-right: 4px;
+  flex-shrink: 0;
+  stroke: var(--amarillo-principal);
+}
+
+.beneficio:not(:last-child) {
+  border-right: 1px solid rgba(0, 0, 0, 0.06);
+  padding-right: 8px; /* Ajuste opcional para separar el texto del borde */
+}

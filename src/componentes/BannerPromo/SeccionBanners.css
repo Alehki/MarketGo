@@ -1,0 +1,14 @@
+/* --- SeccionBanners.css --- */
+.seccion-banners-carrusel {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  padding: 0.5rem 1rem;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Ocultar scroll en Firefox */
+}
+
+.seccion-banners-carrusel::-webkit-scrollbar {
+  display: none; /* Ocultar scroll en Chrome/Safari */
+}

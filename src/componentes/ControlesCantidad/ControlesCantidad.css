@@ -1,0 +1,117 @@
+/* ==========================================
+   CONTROLES Y BOTONES (DESACOPLADO)
+   ========================================== */
+
+.controles-cantidad {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Botón estado base ("Agregar") */
+.controles-cantidad .btn-agregar {
+  width: 100%;
+  height: 36px;
+  border: none;
+  border-radius: 10px;
+  background-color: var(--amarillo-principal, #f5b800);
+  color: #111827;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.controles-cantidad .btn-agregar:active {
+  transform: scale(0.97);
+}
+
+.controles-cantidad .btn-agregar:disabled {
+  opacity: 0.55;
+  background-color: #e5e7eb;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+/* Selector (+ / - / eliminar) */
+.controles-cantidad .selector-cantidad {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 36px;
+  background-color: #f3f4f6;
+  border-radius: 10px;
+  padding: 3px;
+  box-sizing: border-box;
+}
+
+.controles-cantidad .selector-cantidad .btn-icon {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: #111827;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  transition: transform 0.1s ease;
+}
+
+.controles-cantidad .selector-cantidad .btn-icon:active {
+  transform: scale(0.93);
+}
+
+.controles-cantidad .selector-cantidad .btn-icon.primary {
+  background-color: var(--amarillo-principal, #f5b800);
+  color: #111827;
+}
+
+.controles-cantidad .selector-cantidad .btn-icon.danger {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.controles-cantidad .selector-cantidad .btn-icon:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.controles-cantidad .cantidad-num {
+  font-weight: 800;
+  font-size: 14px;
+  color: #111827;
+  /* user-select: none; */
+}
+
+/* ==========================================
+   VARIANTE SMALL (Ideal para renglones del carrito)
+   ========================================== */
+.controles-cantidad.is-small {
+  width: auto; /* Se ajusta al contenido */
+}
+
+.controles-cantidad.is-small .selector-cantidad {
+  height: 30px;
+  gap: 6px;
+  padding: 2px;
+}
+
+.controles-cantidad.is-small .selector-cantidad .btn-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+}
+
+.controles-cantidad.is-small .cantidad-num {
+  font-size: 13px;
+  padding: 0 4px;
+}
