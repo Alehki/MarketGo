@@ -1,7 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { ProductoCard } from '../ProductoCard/ProductoCard.jsx';
-import { obtenerProductosPorCategoria, obtenerProductosDestacados } from '../../services/productosService';
+import { 
+  obtenerProductosPorCategoria, 
+  obtenerProductosDestacados, 
+  suscribirseAProductos 
+} from '../../services/productosService';
 import './VistaCategoria.css';
+
+// Helper local para normalizar los datos de Realtime
+function normalizarProducto(p) {
+  if (!p) return p;
+  return {
+    ...p,
+    imagenes: Array.isArray(p.imagenes) ? p.imagenes : (p.imagenes ? [p.imagenes] : []),
+    colores: Array.isArray(p.colores) ? p.colores : (p.colores ? [p.colores] : [])
+  };
+}
 
 export const VistaCategoria = ({ 
   categoria, 
@@ -15,29 +29,75 @@ export const VistaCategoria = ({
   const [productos, setProductos] = useState([]);
   const [cargando, setCargando] = useState(true);
 
+  const nombreCat = typeof categoria === 'string' ? categoria : categoria?.nombre;
+  const esSeccionDestacados = nombreCat === "Los más vendidos" || nombreCat === "Destacados";
+
   useEffect(() => {
+    let cancelado = false;
+
     async function cargarProductos() {
-      if (!categoria) return;
+      if (!nombreCat) return;
       setCargando(true);
-      
-      const nombreCat = typeof categoria === 'string' ? categoria : categoria.nombre;
       
       let datos = [];
 
-      // 🔴 SI ES LA SECCIÓN ESPECIAL "LOS MÁS VENDIDOS" O "DESTACADOS"
-      if (nombreCat === "Los más vendidos" || nombreCat === "Destacados") {
+      if (esSeccionDestacados) {
         datos = await obtenerProductosDestacados();
       } else {
-        // SI ES UNA CATEGORÍA NORMAL DE SUPABASE (Lácteos, Bebidas, etc.)
         datos = await obtenerProductosPorCategoria(nombreCat);
       }
       
-      setProductos(datos || []);
-      setCargando(false);
+      if (!cancelado) {
+        setProductos(datos || []);
+        setCargando(false);
+      }
     }
 
     cargarProductos();
-  }, [categoria]);
+
+    // Actualización quirúrgica en tiempo real desde el payload
+    const canal = suscribirseAProductos((payload) => {
+      const { eventType, new: nuevoProd, old: viejoProd } = payload;
+
+      setProductos((prevProductos) => {
+        const prodNormalizado = normalizarProducto(nuevoProd);
+
+        // Verificamos si al producto le corresponde estar en esta vista
+        const leCorrespondeAEstaVista = esSeccionDestacados
+          ? (prodNormalizado?.activo && prodNormalizado?.destacado)
+          : (prodNormalizado?.activo && prodNormalizado?.categoria === nombreCat);
+
+        if (eventType === 'UPDATE') {
+          if (leCorrespondeAEstaVista) {
+            const existe = prevProductos.some(p => p.id === prodNormalizado.id);
+            if (existe) {
+              return prevProductos.map(p => p.id === prodNormalizado.id ? prodNormalizado : p);
+            } else {
+              return [...prevProductos, prodNormalizado];
+            }
+          } else {
+            // Se desactivó o cambió de categoría
+            return prevProductos.filter(p => p.id !== prodNormalizado.id);
+          }
+        }
+
+        if (eventType === 'DELETE') {
+          return prevProductos.filter(p => p.id !== viejoProd.id);
+        }
+
+        if (eventType === 'INSERT' && leCorrespondeAEstaVista) {
+          return [...prevProductos, prodNormalizado];
+        }
+
+        return prevProductos;
+      });
+    });
+
+    return () => {
+      cancelado = true;
+      if (canal) canal.unsubscribe();
+    };
+  }, [categoria, nombreCat, esSeccionDestacados]);
 
   return (
     <div className="vista-categoria">
@@ -49,7 +109,7 @@ export const VistaCategoria = ({
           </svg>
         </button>
         <h1 className="titulo-categoria">
-          {typeof categoria === 'string' ? categoria : categoria.nombre}
+          {nombreCat}
         </h1>
       </div>
 

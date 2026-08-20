@@ -5,7 +5,7 @@ import { useCarrito } from './hooks/useCarrito';
 import { useCategorias } from './hooks/useCategorias';
 
 // Servicios
-import { obtenerProductosDestacados } from './services/productosService';
+import { obtenerProductosDestacados, suscribirseAProductos } from './services/productosService';
 
 // Componentes generales
 import { Header } from "./componentes/Header/Header.jsx";
@@ -22,6 +22,9 @@ import { SeccionBanners } from './componentes/BannerPromo/SeccionBanners.jsx';
 import { CardModal } from "./componentes/CardModal/CardModal.jsx";
 import { ModalProductoDetalle } from "./componentes/ModalProductoDetalle/ModalProductoDetalle.jsx";
 import { SplashScreen } from './componentes/SplashScreen/SplashScreen.jsx';
+import { ModalResumenPedido } from "./componentes/ModalResumenPedido/ModalResumenPedido.jsx";
+import { SeccionPedidos } from './componentes/SeccionPedidos/SeccionPedidos.jsx';
+import { crearPedido } from './services/pedidosServices.js'; // Verificá la ruta exacta
 
 const bannerPromo = `${import.meta.env.BASE_URL}bannerPromo.jpg`;
 const faviconSvg = `${import.meta.env.BASE_URL}favicon.svg`;
@@ -40,11 +43,58 @@ function App() {
   const [productosDestacados, setProductosDestacados] = useState([]);
   const [cargandoDestacados, setCargandoDestacados] = useState(true);
 
+  // Cantidad de pedidos activos.
+  const [cantidadPedidosActivos, setCantidadPedidosActivos] = useState(0);
+
+  // ---------------------ModalResumen
+  const [modalResumenAbierta, setModalResumenAbierta] = useState(false);
+
+  const handleIrAPagar = () => {
+    setModalCarritoAbierta(false);
+    setModalResumenAbierta(true);
+  };
+
+  const handleVolverAlCarrito = () => {
+    setModalResumenAbierta(false);
+    setModalCarritoAbierta(true);
+  };
+
+  const handleEnviarWhatsApp = (datosPedido) => {
+    console.log("Pedido listo para procesar:", datosPedido);
+  };
+
+  //------------------
+
+  // Crear o hacer pedidio----------------
+
+  const handleConfirmarPedido = async (datosCliente) => {
+    try {
+      // 1. Llama a tu función RPC de Supabase
+      await crearPedido(carrito, datosCliente);
+
+      // 2. Cierra la modal
+      setModalResumenAbierta(false);
+
+      vaciarCarrito();
+
+      // 3. Limpia el carrito
+      if (vaciarCarrito) vaciarCarrito();
+
+      // 4. Te redirige a la solapa de pedidos
+      setTabActiva('pedidos');
+
+    } catch (error) {
+      console.error("Error al guardar el pedido:", error);
+      alert("Ocurrió un problema al procesar el pedido. Intentá nuevamente.");
+    }
+  };
+
   const {
     carrito,
     agregarItem,
     restarItem,
     eliminarItem,
+    vaciarCarrito,
     total,
     cantidadTotalItems,
     faltaParaMinimo,
@@ -73,6 +123,16 @@ function App() {
       setCargandoDestacados(false);
     }
     cargarDatos();
+
+    // Escuchar cambios en la base de datos enviados por el Admin viejo
+    const canal = suscribirseAProductos(async () => {
+      const datosActualizados = await obtenerProductosDestacados();
+      setProductosDestacados(datosActualizados);
+    });
+
+    return () => {
+      if (canal) canal.unsubscribe();
+    };
   }, []);
 
   // --- ESCUCHAR BOTÓN ATRÁS DEL CELULAR (POPSTATE) ---
@@ -210,9 +270,7 @@ function App() {
 
         {/* Pestaña Pedidos */}
         <div style={{ display: tabActiva === 'pedidos' ? 'block' : 'none' }}>
-          <div style={{ padding: '2rem', textAlign: 'center' }}>
-            <h2>Mis Pedidos</h2>
-          </div>
+          <SeccionPedidos onActualizarCantidadActivos={setCantidadPedidosActivos} />
         </div>
 
         {/* Pestaña Perfil */}
@@ -234,7 +292,18 @@ function App() {
         onAgregar={agregarItem}
         onRestar={restarItem}
         onEliminar={handleEliminarDesdeCarrito}
-        onIrAPagar={() => setModalCarritoAbierta(false)}
+        // onIrAPagar={() => setModalCarritoAbierta(false)}
+        onIrAPagar={handleIrAPagar}
+      />
+
+      <ModalResumenPedido 
+        isOpen={modalResumenAbierta}
+        onClose={() => setModalResumenAbierta(false)}
+        onVolver={handleVolverAlCarrito}
+        carrito={carrito}
+        total={total}
+        costoEnvio={900}
+        onEnviarWhatsApp={handleConfirmarPedido}
       />
 
       <ModalProductoDetalle 
@@ -253,7 +322,7 @@ function App() {
           setTabActiva(tab);
           if (tab !== 'inicio') setCategoriaSeleccionada(null);
         }}
-        tienePedidosActivos={false}
+        pedidosActivos={cantidadPedidosActivos} // Le pasás la cantidad entera acá
       />
     </div>
   );

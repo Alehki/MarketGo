@@ -62,6 +62,9 @@ body {
   font-size: var(--text-sm);
 
   overflow-x: hidden;
+  
+  /* Agregado para que el bottom nav no tape la parte de abajo de la web */
+  padding-bottom: 40px;
 }
 
 img {

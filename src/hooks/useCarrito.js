@@ -42,7 +42,7 @@ export function useCarrito(COMPRA_MINIMA = 0) {
     });
   };
 
-  // Restar item (si pasa de 1 a 0 la UI se encarga de llamar a pedirEliminar)
+  // Restar item
   const restarItem = (key, cantidad = 1) => {
     setCarrito((prev) => {
       if (!prev[key]) return prev;
@@ -72,6 +72,11 @@ export function useCarrito(COMPRA_MINIMA = 0) {
     });
   };
 
+  // 1. VACIAR CARRITO COMPLETO
+  const vaciarCarrito = () => {
+    setCarrito({});
+  };
+
   // Cálculos de Totales
   const total = Object.values(carrito).reduce(
     (acc, p) => acc + p.precio * p.cantidad,
@@ -91,6 +96,7 @@ export function useCarrito(COMPRA_MINIMA = 0) {
     agregarItem,
     restarItem,
     eliminarItem,
+    vaciarCarrito, // 2. EXPORTAR AQUÍ
     total,
     cantidadTotalItems,
     faltaParaMinimo,

@@ -6,14 +6,14 @@
   overflow: hidden; /* Evita que la pantalla principal tenga scroll horizontal */
 }
 
-/* CAJA AMARILLA: Puesta como un bloque por detrás (estático) */
 .caja-amarilla-fondo {
   position: absolute;
   top: 16px;
   bottom: 16px;
-  left: 16px;  /* Margen izquierdo del bloque amarillo respecto a la pantalla */
-  right: 16px; /* Margen derecho del bloque amarillo */
-  background-color: var(--amarillo-suave);
+  left: 16px;
+  right: 16px;
+  /* Degradado que funde el amarillo suave con transparencia */
+  background: linear-gradient(180deg, var(--amarillo-suave) 0%, rgba(255, 255, 255, 0.2) 100%);
   border-radius: 20px;
   z-index: 1;
 }
@@ -57,6 +57,7 @@
 
   scroll-snap-type: x mandatory;
   /* -webkit-overflow-scrolling: touch; */
+  margin-left: 30px;
 }
 
 .cinta-scroll::-webkit-scrollbar {

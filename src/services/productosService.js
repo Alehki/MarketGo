@@ -96,3 +96,25 @@ export async function obtenerCategorias() {
     };
   });
 }
+
+export function suscribirseAProductos(callback) {
+  const canalId = `productos-realtime-${Math.random().toString(36).substring(2, 9)}`;
+
+  const canal = supabase
+    .channel(canalId)
+    .on(
+      'postgres_changes',
+      {
+        event: '*', 
+        schema: 'public',
+        table: 'productos'
+      },
+      (payload) => {
+        // Le pasamos el payload con la info del cambio (new, old, eventType)
+        callback(payload); 
+      }
+    )
+    .subscribe();
+
+  return canal;
+}

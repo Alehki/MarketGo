@@ -9,3 +9,10 @@ src/
 └── hooks/
     ├── useProductos.js        <-- Hook para catálogo
     └── usePedidos.js          <-- Hook con Realtime integrado
+
+
+NOTAS
+
+Podriamos modificar el tema de actualizar en tiempo real las tarjetas de: 
+VistaCategoria.jsx, SeccionCategoriaHome.jsx y App.jsx(Por destacados) Se deberia hacer mas prolijo
+con React Context.

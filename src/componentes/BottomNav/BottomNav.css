@@ -159,3 +159,52 @@
   height: 100%;
   justify-content: center;
 }
+
+/* BURBUJA, NUMERO DE ICONO PEDIDOS */
+.nav-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Burbuja / Badge de Notificación */
+.badge-pedidos {
+  position: absolute;
+  top: -3px;
+  right: -6px;
+  
+  /* Color principal (Verde vibrante/elegante o tu variable primaria) */
+  background-color: var(--color-primario, #10b981); 
+  color: #ffffff;
+  
+  /* Reducción de tamaño y tipografía más compacta */
+  font-size: 0.625rem; /* 10px */
+  font-weight: 700;
+  min-width: 15px;
+  height: 15px;
+  border-radius: 999px;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+  
+  /* Borde más fino y sombra más sutil */
+  border: 1.5px solid #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  
+  animation: popBadge 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* Animación de entrada rápida y limpia */
+@keyframes popBadge {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

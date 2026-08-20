@@ -1,0 +1,120 @@
+/* Fondo oscuro con blur */
+.overlay-animacion {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  /* backdrop-filter: blur(8px); */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1.5rem;
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Modal con rebote elástico */
+.card-exito {
+  background: #ffffff;
+  padding: 2.5rem 1.5rem;
+  border-radius: 28px;
+  text-align: center;
+  max-width: 360px;
+  width: 100%;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  animation: scaleUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.titulo-exito {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 1rem 0 0.5rem 0;
+}
+
+.subtitulo-exito {
+  font-size: 0.95rem;
+  color: #64748b;
+  margin-bottom: 1.5rem;
+  line-height: 1.4;
+}
+
+.btn-continuar {
+  width: 100%;
+  padding: 0.875rem;
+  border: none;
+  border-radius: 14px;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s active;
+}
+
+.btn-continuar:active {
+  transform: scale(0.97);
+}
+
+/* --- ANIMACIÓN DEL CHECKMARK --- */
+.contenedor-icono {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto;
+}
+
+/* Incrementamos las duraciones para un trazo más suave y vistoso */
+
+.checkmark {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: block;
+  stroke-width: 3;
+  stroke: #22c55e;
+  stroke-miterlimit: 10;
+  box-shadow: inset 0px 0px 0px #22c55e;
+  /* Subimos fill a 0.6s y el rebote (scale) a 0.4s con más delay (1.2s) */
+  animation: fill 0.6s ease-in-out 0.6s forwards, scale 0.4s ease-in-out 1.2s alternate forwards;
+}
+
+.checkmark-circle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 3;
+  stroke-miterlimit: 10;
+  stroke: #22c55e;
+  fill: none;
+  /* El círculo tarda 0.8s en cerrarse (antes 0.6s) */
+  animation: stroke 0.8s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark-check {
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  /* La tilde tarda 0.5s en dibujarse y arranca al segundo 0.9s */
+  animation: stroke 0.5s cubic-bezier(0.65, 0, 0.45, 1) 0.9s forwards;
+}
+
+@keyframes stroke {
+  100% { stroke-dashoffset: 0; }
+}
+
+@keyframes scale {
+  0%, 100% { transform: none; }
+  50% { transform: scale3d(1.1, 1.1, 1); }
+}
+
+@keyframes fill {
+  100% { box-shadow: inset 0px 0px 0px 40px rgba(34, 197, 94, 0.1); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}

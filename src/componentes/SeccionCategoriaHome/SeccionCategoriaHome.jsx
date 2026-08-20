@@ -1,12 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { ProductoCard } from '../ProductoCard/ProductoCard.jsx';
-import { obtenerProductosPorCategoria, obtenerProductosDestacados } from '../../services/productosService';
+import { 
+  obtenerProductosPorCategoria, 
+  obtenerProductosDestacados, 
+  suscribirseAProductos 
+} from '../../services/productosService';
 import './SeccionCategoriaHome.css';
+
+// Helper local para dar formato correcto a arrays al recibir datos crudos de Realtime
+function normalizarProducto(p) {
+  if (!p) return p;
+  return {
+    ...p,
+    imagenes: Array.isArray(p.imagenes) ? p.imagenes : (p.imagenes ? [p.imagenes] : []),
+    colores: Array.isArray(p.colores) ? p.colores : (p.colores ? [p.colores] : [])
+  };
+}
 
 export const SeccionCategoriaHome = ({ 
   titulo, 
-  nombreCategoria, // Ejemplo: "Bebidas", "Lácteos" o "Los más vendidos"
-  esDestacados = false, // Si es true, usa obtenerProductosDestacados()
+  nombreCategoria, 
+  esDestacados = false, 
   onMostrarTodos,
   carrito = {},
   onAgregar,
@@ -31,7 +45,6 @@ export const SeccionCategoriaHome = ({
       }
 
       if (!cancelado) {
-        // Tomamos solo los primeros 6 para el carrusel horizontal del home
         setProductos(datos ? datos.slice(0, 6) : []);
         setCargando(false);
       }
@@ -39,11 +52,49 @@ export const SeccionCategoriaHome = ({
 
     fetchProductos();
 
-    // Limpieza para evitar fugas de memoria y renders desfasados
+    // Escuchar el evento payload en vivo para modificar la lista en memoria sin re-cargar la API
+    const canal = suscribirseAProductos((payload) => {
+      const { eventType, new: nuevoProd, old: viejoProd } = payload;
+
+      setProductos((prevProductos) => {
+        const prodNormalizado = normalizarProducto(nuevoProd);
+
+        // Evaluar si al producto le corresponde estar en esta sección
+        const leCorrespondeAEstaSeccion = esDestacados 
+          ? (prodNormalizado?.activo && prodNormalizado?.destacado)
+          : (prodNormalizado?.activo && prodNormalizado?.categoria === nombreCategoria);
+
+        if (eventType === 'UPDATE') {
+          if (leCorrespondeAEstaSeccion) {
+            const existe = prevProductos.some(p => p.id === prodNormalizado.id);
+            if (existe) {
+              return prevProductos.map(p => p.id === prodNormalizado.id ? prodNormalizado : p);
+            } else {
+              return [...prevProductos, prodNormalizado].slice(0, 6);
+            }
+          } else {
+            // Si el producto se desactivó o cambió de categoría, lo removemos limpiamente
+            return prevProductos.filter(p => p.id !== prodNormalizado.id);
+          }
+        }
+
+        if (eventType === 'DELETE') {
+          return prevProductos.filter(p => p.id !== viejoProd.id);
+        }
+
+        if (eventType === 'INSERT' && leCorrespondeAEstaSeccion) {
+          return [...prevProductos, prodNormalizado].slice(0, 6);
+        }
+
+        return prevProductos;
+      });
+    });
+
     return () => {
       cancelado = true;
+      if (canal) canal.unsubscribe();
     };
-  }, [nombreCategoria, esDestacados]); // 🔴 Solo depende de tipos primitivos (strings/booleans)
+  }, [nombreCategoria, esDestacados]);
 
   if (!cargando && productos.length === 0) return null;
 
