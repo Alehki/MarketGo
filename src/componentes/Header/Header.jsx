@@ -3,7 +3,7 @@ import { Logo } from "./Logo/Logo";
 import { CartButton } from "./CartButton/CartButton";
 import { SearchBar } from "./SearchBar/SearchBar";
 
-export function Header({ cantidadCarrito = 0, onAbrirCarrito }) {
+export function Header({ cantidadCarrito = 0, onAbrirCarrito, onAbrirBuscador }) {
   return (
     <header className="header">
       <div className="header-top">
@@ -14,7 +14,7 @@ export function Header({ cantidadCarrito = 0, onAbrirCarrito }) {
         />
       </div>
 
-      <SearchBar />
+      <SearchBar onClick={onAbrirBuscador} />
     </header>
   );
 }

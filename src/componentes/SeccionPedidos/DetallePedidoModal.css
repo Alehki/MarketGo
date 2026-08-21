@@ -1,0 +1,233 @@
+/* ==========================================
+   BOTÓN Y MODAL DE DETALLE
+   ========================================== */
+
+/* Estilo moderno para el botón */
+/* .btn-detalle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-detalle:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.flecha-btn {
+  font-size: 14px;
+  transition: transform 0.2s ease;
+}
+
+.btn-detalle:hover .flecha-btn {
+  transform: translateX(4px);
+} */
+
+.pedido-footer {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-start; /* Alineado a la izquierda */
+}
+
+.btn-detalle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: auto;
+  background: transparent;
+  color: #64748b; /* Tono neutro slate */
+  border: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-detalle:hover {
+  color: #0f172a; /* Oscurece al pasar el cursor */
+  background: #f1f5f9; /* Fondo neutro sutil */
+}
+
+.btn-detalle:active {
+  transform: scale(0.96);
+}
+
+/* Modal Overlay (Fondo oscuro) */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Tarjeta flotante del modal */
+.modal-card {
+  background: white;
+  width: 100%;
+  max-width: 420px;
+  border-radius: 20px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Subi la modal de detalle xD */
+  margin-top: -100px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.btn-cerrar {
+  background: #f1f5f9;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: #64748b;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.btn-cerrar:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.modal-body {
+  padding: 20px;
+  max-height: 65vh;
+  overflow-y: auto;
+}
+
+.items-lista h4 {
+  margin: 0 0 12px 0;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #64748b;
+}
+
+.detalle-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px dashed #e2e8f0;
+  font-size: 14px;
+}
+
+.item-cant-nombre strong {
+  color: var(--color-estado, #2563EB);
+  margin-right: 6px;
+}
+
+.item-precio {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.sin-items {
+  font-size: 13px;
+  color: #94a3b8;
+  font-style: italic;
+}
+
+.modal-info-extra {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid #f1f5f9;
+  font-size: 13px;
+  color: #475569;
+}
+
+.modal-info-extra p {
+  margin: 2px 0 0 0;
+  color: #0f172a;
+  font-weight: 500;
+}
+
+.modal-resumen-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 2px solid #0f172a;
+  font-size: 16px;
+  color: #0f172a;
+}
+
+.modal-footer {
+  padding: 12px 20px;
+  background: #f8fafc;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-cerrar-modal {
+  background: #0f172a;
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-cerrar-modal:hover {
+  opacity: 0.9;
+}
+
+/* Animaciones del modal */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}

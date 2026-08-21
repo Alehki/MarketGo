@@ -1,12 +1,12 @@
 import "./SearchBar.css";
 
-export function SearchBar() {
+export function SearchBar({ onClick }) {
   return (
-    <div className="search-bar">
-
+    <div className="search-bar" onClick={onClick}>
       <input
         type="text"
         placeholder="Buscar productos..."
+        readOnly
       />
 
       <div className="search-icon-container">
@@ -28,7 +28,6 @@ export function SearchBar() {
           />
         </svg>
       </div>
-
     </div>
   );
 }

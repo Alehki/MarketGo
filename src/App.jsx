@@ -6,9 +6,11 @@ import { useCategorias } from './hooks/useCategorias';
 
 // Servicios
 import { obtenerProductosDestacados, suscribirseAProductos } from './services/productosService';
+import { crearPedido, obtenerPedidosCliente, suscribirseAPedidos } from './services/pedidosServices.js'; // <-- Importamos los servicios de pedidos
 
 // Componentes generales
 import { Header } from "./componentes/Header/Header.jsx";
+import { BuscadorDesplegable } from './componentes/BuscadorDesplegable/BuscadorDesplegable.jsx';
 import { BarraBeneficios } from './componentes/BarraBeneficios/BarraBeneficios.jsx';
 import { Carrusel } from "./componentes/Carrusel/Carrusel.jsx";
 import { Destacados } from "./componentes/Destacados/Destacados.jsx";
@@ -24,7 +26,6 @@ import { ModalProductoDetalle } from "./componentes/ModalProductoDetalle/ModalPr
 import { SplashScreen } from './componentes/SplashScreen/SplashScreen.jsx';
 import { ModalResumenPedido } from "./componentes/ModalResumenPedido/ModalResumenPedido.jsx";
 import { SeccionPedidos } from './componentes/SeccionPedidos/SeccionPedidos.jsx';
-import { crearPedido } from './services/pedidosServices.js'; // Verificá la ruta exacta
 
 const bannerPromo = `${import.meta.env.BASE_URL}bannerPromo.jpg`;
 const faviconSvg = `${import.meta.env.BASE_URL}favicon.svg`;
@@ -43,11 +44,14 @@ function App() {
   const [productosDestacados, setProductosDestacados] = useState([]);
   const [cargandoDestacados, setCargandoDestacados] = useState(true);
 
-  // Cantidad de pedidos activos.
+  // Cantidad de pedidos activos globales
   const [cantidadPedidosActivos, setCantidadPedidosActivos] = useState(0);
 
-  // ---------------------ModalResumen
+  // ModalResumen
   const [modalResumenAbierta, setModalResumenAbierta] = useState(false);
+
+  const [buscadorAbierto, setBuscadorAbierto] = useState(false);
+  
 
   const handleIrAPagar = () => {
     setModalCarritoAbierta(false);
@@ -57,36 +61,6 @@ function App() {
   const handleVolverAlCarrito = () => {
     setModalResumenAbierta(false);
     setModalCarritoAbierta(true);
-  };
-
-  const handleEnviarWhatsApp = (datosPedido) => {
-    console.log("Pedido listo para procesar:", datosPedido);
-  };
-
-  //------------------
-
-  // Crear o hacer pedidio----------------
-
-  const handleConfirmarPedido = async (datosCliente) => {
-    try {
-      // 1. Llama a tu función RPC de Supabase
-      await crearPedido(carrito, datosCliente);
-
-      // 2. Cierra la modal
-      setModalResumenAbierta(false);
-
-      vaciarCarrito();
-
-      // 3. Limpia el carrito
-      if (vaciarCarrito) vaciarCarrito();
-
-      // 4. Te redirige a la solapa de pedidos
-      setTabActiva('pedidos');
-
-    } catch (error) {
-      console.error("Error al guardar el pedido:", error);
-      alert("Ocurrió un problema al procesar el pedido. Intentá nuevamente.");
-    }
   };
 
   const {
@@ -101,11 +75,59 @@ function App() {
     cumpleMinimo
   } = useCarrito(COMPRA_MINIMA);
 
-  // Ejemplo de datos para tus banners
+  // --- SUSCRIPCIÓN GLOBAL REALTIME PARA CONTADOR DE PEDIDOS ---
+  const actualizarContadorGlobalPedidos = async () => {
+    try {
+      const pedidos = await obtenerPedidosCliente();
+      const activos = pedidos.filter(p => p.estado !== 'entregado');
+      setCantidadPedidosActivos(activos.length);
+    } catch (err) {
+      console.error("Error consultando pedidos activos:", err);
+    }
+  };
+
+  useEffect(() => {
+    actualizarContadorGlobalPedidos();
+
+    // Se suscribe globalmente para que funcione aunque estés en el Home
+    const canalPedidos = suscribirseAPedidos(() => {
+      actualizarContadorGlobalPedidos();
+    });
+
+    return () => {
+      if (canalPedidos) canalPedidos.unsubscribe();
+    };
+  }, []);
+
+  // Crear o hacer pedido
+  const handleConfirmarPedido = async (datosCliente) => {
+    try {
+      // 1. Llama a tu función RPC de Supabase
+      await crearPedido(carrito, datosCliente);
+
+      // 2. Cierra la modal
+      setModalResumenAbierta(false);
+
+      // 3. Limpia el carrito
+      if (vaciarCarrito) vaciarCarrito();
+
+      // 4. Actualizamos el contador de forma inmediata
+      await actualizarContadorGlobalPedidos();
+
+      // 5. Te redirige a la solapa de pedidos
+      setTabActiva('pedidos');
+
+    } catch (error) {
+      console.error("Error al guardar el pedido:", error);
+      alert("Ocurrió un problema al procesar el pedido. Intentá nuevamente.");
+    }
+  };
+
+  // Banners Promo
   const BANNERS_PROMO = [
     {
       id: 'nestle-week',
-      imagen: bannerPromo, // O URL de imagen
+      imagen: bannerPromo,
       categoriaDestino: 'Nestlé'
     },
     {
@@ -115,6 +137,7 @@ function App() {
     }
   ];
 
+  // Carga de destacados y suscripción a productos
   useEffect(() => {
     async function cargarDatos() {
       setCargandoDestacados(true);
@@ -124,7 +147,6 @@ function App() {
     }
     cargarDatos();
 
-    // Escuchar cambios en la base de datos enviados por el Admin viejo
     const canal = suscribirseAProductos(async () => {
       const datosActualizados = await obtenerProductosDestacados();
       setProductosDestacados(datosActualizados);
@@ -135,10 +157,9 @@ function App() {
     };
   }, []);
 
-  // --- ESCUCHAR BOTÓN ATRÁS DEL CELULAR (POPSTATE) ---
+  // Manejo del botón Atrás del celular
   useEffect(() => {
     const handlePopState = () => {
-      // Al presionar atrás en el celular, cerramos la categoría
       setCategoriaSeleccionada(null);
     };
 
@@ -149,17 +170,15 @@ function App() {
     };
   }, []);
 
-  // Handler para abrir la categoría
   const handleAbrirCategoria = (cat) => {
-    window.history.pushState({ vista: 'categoria' }, ''); // 1. Empujamos estado al historial del celu
-    setCategoriaSeleccionada(cat); // 2. Abrimos categoría
-    window.scrollTo(0, 0); // 3. Llevamos el scroll arriba para ver el detalle
+    window.history.pushState({ vista: 'categoria' }, '');
+    setCategoriaSeleccionada(cat);
+    window.scrollTo(0, 0);
   };
 
-  // Handler para la flecha/botón de volver visual de la vista
   const handleVolverDeCategoria = () => {
     if (window.history.state?.vista === 'categoria') {
-      window.history.back(); // Gatilla el evento 'popstate' de forma limpia
+      window.history.back();
     } else {
       setCategoriaSeleccionada(null);
     }
@@ -185,13 +204,25 @@ function App() {
       <Header 
         cantidadCarrito={cantidadTotalItems} 
         onAbrirCarrito={() => setModalCarritoAbierta(true)} 
+        onAbrirBuscador={() => setBuscadorAbierto(true)}
+      />
+
+      {/* Renderizado condicional del overlay de búsqueda */}
+      <BuscadorDesplegable 
+        isOpen={buscadorAbierto}
+        onClose={() => setBuscadorAbierto(false)}
+        cantidadCarrito={cantidadTotalItems}
+        onAbrirCarrito={() => {
+          setBuscadorAbierto(false);
+          setModalCarritoAbierta(true);
+        }}
       />
 
       <main className="main-content">
         {/* Pestaña Inicio */}
         <div style={{ display: tabActiva === 'inicio' ? 'block' : 'none' }}>
           
-          {/* 1. VISTA DE CATEGORÍA (Solo visible si hay seleccionada una) */}
+          {/* Vista Categoría */}
           {categoriaSeleccionada && (
             <VistaCategoria 
               categoria={categoriaSeleccionada}
@@ -204,7 +235,7 @@ function App() {
             />
           )}
 
-          {/* 2. CONTENIDO COMPLETO DEL HOME (Oculto 100% cuando hay una categoría abierta) */}
+          {/* Contenido Completo Home */}
           <div style={{ display: categoriaSeleccionada ? 'none' : 'block' }}>
             <BarraBeneficios />
             <Carrusel />
@@ -225,7 +256,6 @@ function App() {
               />
             )}
 
-
             <Categorias 
               categorias={categorias}
               loading={cargandoCategorias}
@@ -235,12 +265,10 @@ function App() {
             <SeccionBanners 
               banners={BANNERS_PROMO}
               onSeleccionarBanner={(banner) => {
-                // Al tocar el banner te puede llevar a una categoría o filtro especial
                 handleAbrirCategoria({ nombre: banner.categoriaDestino });
               }}
             />
 
-            {/* 1. Para "Los más vendidos" (usa esDestacados) */}
             <SeccionCategoriaHome 
               titulo="Los más vendidos"
               nombreCategoria="Los más vendidos"
@@ -253,7 +281,6 @@ function App() {
               onMostrarTodos={(cat) => handleAbrirCategoria(cat)} 
             />
 
-            {/* 2. Para categorías reales de Supabase (ej: Bebidas) */}
             <SeccionCategoriaHome 
               titulo="Bebidas e Hidratación"
               nombreCategoria="almacen"
@@ -292,7 +319,6 @@ function App() {
         onAgregar={agregarItem}
         onRestar={restarItem}
         onEliminar={handleEliminarDesdeCarrito}
-        // onIrAPagar={() => setModalCarritoAbierta(false)}
         onIrAPagar={handleIrAPagar}
       />
 
@@ -322,7 +348,7 @@ function App() {
           setTabActiva(tab);
           if (tab !== 'inicio') setCategoriaSeleccionada(null);
         }}
-        pedidosActivos={cantidadPedidosActivos} // Le pasás la cantidad entera acá
+        pedidosActivos={cantidadPedidosActivos}
       />
     </div>
   );

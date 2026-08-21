@@ -1,17 +1,9 @@
-/* css estilos pedidos */
-
+/* ==========================================
+   ESTILOS GENERALES Y TARJETA
+   ========================================== */
 .title-pedido {
   font-size: 30px;
   padding: 10px;
-}
-
-/* historial más suave */
-.pedidos-seccion.historial .pedido-card {
-  opacity: 0.6;
-}
-
-.pedidos-seccion.historial {
-  color: #777;
 }
 
 .pedido-card {
@@ -22,7 +14,7 @@
   padding: 16px;
   margin-bottom: 14px;
   border-left: 5px solid var(--color-estado);
-  box-shadow: 0 2px 10px rgba(0,0,0,.06);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, .06);
   transition:
     border-color .5s ease,
     transform .3s ease,
@@ -33,7 +25,6 @@
   animation: aparecerPedido .35s ease;
 }
 
-/* 1. Agregado: keyframe que faltaba */
 @keyframes aparecerPedido {
   from {
     opacity: 0;
@@ -45,6 +36,26 @@
   }
 }
 
+/* Animación de salida al historial */
+.pedido-card.saliendo {
+  opacity: 0;
+  transform: translateY(12px) scale(.98);
+  max-height: 0;
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  overflow: hidden;
+  transition:
+    opacity .45s ease,
+    transform .45s ease,
+    max-height .45s ease,
+    margin .45s ease,
+    padding .45s ease;
+}
+
+/* ==========================================
+   VARIABLES DE COLOR SEGÚN ESTADO
+   ========================================== */
 .estado-recibido {
   --color-estado: #2563EB;
 }
@@ -61,18 +72,9 @@
   --color-estado: #22C55E;
 }
 
-.pedido-estado {
-  background: color-mix(in srgb, var(--color-estado) 14%, white);
-  color: var(--color-estado);
-  padding: 8px 12px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 600;
-  transition:
-    background-color .5s ease,
-    color .5s ease;
-}
-
+/* ==========================================
+   HEADER Y FECHAS
+   ========================================== */
 .pedido-header {
   display: flex;
   justify-content: space-between;
@@ -85,19 +87,36 @@
   font-size: 14px;
 }
 
-.pedidos-seccion {
-  margin-bottom: 20px;
+.pedido-estado {
+  background: color-mix(in srgb, var(--color-estado) 14%, white);
+  color: var(--color-estado);
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  transition:
+    background-color .5s ease,
+    color .5s ease;
 }
 
-.pedidos-seccion h3 {
-  margin-bottom: 10px;
-  font-size: 16px;
+.pedido-total {
+  font-weight: bold;
+  margin: 8px 0 4px 0;
 }
 
-/* fechas */
 .fecha {
   font-size: 13px;
   color: #777;
+}
+
+.pedido-eta {
+  margin-top: 18px;
+  background: color-mix(in srgb, var(--color-estado) 12%, white);
+  color: var(--color-estado);
+  padding: 12px;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 14px;
 }
 
 .pedido-footer {
@@ -112,7 +131,190 @@
   cursor: pointer;
 }
 
-/* detalles */
+/* ==========================================
+   BARRA DE PROGRESO Y LÍNEA DE TIEMPO
+   ========================================== */
+.pedido-progreso {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 28px;
+  padding: 0 8px;
+}
+
+.pedido-progreso::before,
+.pedido-progreso::after {
+  content: "";
+  position: absolute;
+  top: 13px;
+  left: calc(12.5% + 15px);
+  width: calc(75% - 30px);
+  height: 4px;
+  border-radius: 999px;
+}
+
+.pedido-progreso::before {
+  background: #e5e5e5;
+  z-index: 0;
+}
+
+.pedido-progreso::after {
+  background: var(--color-estado);
+  z-index: 1;
+  transform-origin: left;
+  transform: scaleX(var(--progreso));
+  transition: transform 1s cubic-bezier(.4, 0, .2, 1);
+}
+
+.paso {
+  flex: 1;
+  text-align: center;
+  position: relative;
+}
+
+.paso span {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #666;
+}
+
+.paso.activo span {
+  color: #111;
+  font-weight: 600;
+}
+
+/* ==========================================
+   CIRCULOS DE ESTADO (ANIMACIONES)
+   ========================================== */
+.circulo {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid #e5e5e5;
+  margin: 0 auto;
+  position: relative;
+  z-index: 3;
+  box-shadow: 0 0 0 1px white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: bold;
+  transition: 
+    background-color 0.4s ease, 
+    border-color 0.4s ease, 
+    color 0.4s ease;
+}
+
+/* Pasos completados anteriores */
+.paso.completado .circulo {
+  background-color: var(--color-estado);
+  border-color: var(--color-estado);
+  color: white;
+  transition-delay: 0s; 
+}
+
+/* Paso activo intermedio (espera a la línea) */
+.paso.activo .circulo {
+  background: color-mix(in srgb, var(--color-estado) 18%, white);
+  border-color: color-mix(in srgb, var(--color-estado) 18%, white);
+  color: white;
+  transition-delay: 0.8s;
+}
+
+.paso.activo .circulo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--color-estado);
+  opacity: 0;
+  animation: respirar 2s ease-in-out 1s infinite;
+}
+
+/* Paso finalizado (entregado): Verde sólido y sin respiración */
+.paso.activo.finalizado .circulo {
+  background-color: var(--color-estado);
+  border-color: var(--color-estado);
+  color: white;
+  transition-delay: 0.8s;
+}
+
+.paso.activo.finalizado .circulo::before {
+  animation: none;
+  opacity: 0;
+}
+
+@keyframes respirar {
+  0% { 
+    transform: scale(0.4); 
+    opacity: 0.3;
+  }
+  50% { 
+    transform: scale(1.15); 
+    opacity: 1;
+  }
+  100% { 
+    transform: scale(0.4); 
+    opacity: 0.3;
+  }
+}
+
+/* ==========================================
+   PESTAÑAS Y SECCIONES
+   ========================================== */
+.pedidos-seccion {
+  margin-bottom: 20px;
+}
+
+.pedidos-seccion.historial .pedido-card {
+  opacity: 0.6;
+}
+
+.pedidos-seccion.historial {
+  color: #777;
+}
+
+.tabs-container {
+  display: flex;
+  background-color: #f1f5f9;
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 20px;
+  gap: 4px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tabs-container .tab-btn.activo {
+  background-color: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.sin-pedidos-msj {
+  text-align: center;
+  color: #888;
+  padding: 30px 0;
+  font-size: 14px;
+}
+
+/* ==========================================
+   MODAL DETALLES
+   ========================================== */
 .modal {
   position: fixed;
   top: 0;
@@ -168,183 +370,4 @@
   font-weight: bold;
   display: flex;
   justify-content: space-between;
-}
-
-/* Progreso */
-.pedido-progreso {
-  position: relative;
-  display: flex;
-  justify-content: space-between;
-  margin-top: 28px;
-  padding: 0 8px;
-}
-
-.pedido-progreso::before,
-.pedido-progreso::after {
-  content: "";
-  position: absolute;
-  top: 13px;
-  left: calc(12.5% + 15px);
-  width: calc(75% - 30px);
-  height: 4px;
-  border-radius: 999px;
-}
-
-.pedido-progreso::before {
-  background: #e5e5e5;
-  z-index: 0;
-}
-
-.pedido-progreso::after {
-  background: var(--color-estado);
-  z-index: 1;
-  transform-origin: left;
-  transform: scaleX(var(--progreso));
-  transition: transform 1s cubic-bezier(.4,0,.2,1);
-}
-
-.paso {
-  flex: 1;
-  text-align: center;
-  position: relative;
-}
-
-.paso span {
-  display: block;
-  margin-top: 8px;
-  font-size: 12px;
-  color: #666;
-}
-
-.paso.activo span {
-  color: #111;
-  font-weight: 600;
-}
-
-.pedido-eta {
-  margin-top: 18px;
-  background: color-mix(in srgb, var(--color-estado) 12%, white);
-  color: var(--color-estado);
-  padding: 12px;
-  border-radius: 14px;
-  font-weight: 600;
-  font-size: 14px;
-}
-
-/* CIRCULOS Y PASOS */
-
-.circulo {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: white;
-  border: 2px solid #e5e5e5;
-  margin: 0 auto;
-  position: relative;
-  z-index: 3;
-  box-shadow: 0 0 0 1px white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: bold;
-  transition:
-    background-color .4s ease,
-    border-color .4s ease,
-    color .4s ease;
-}
-
-.paso.completado .circulo {
-  background-color: var(--color-estado);
-  border-color: var(--color-estado);
-  color: white;
-  transition: none;
-}
-
-.paso.activo .circulo {
-  background: color-mix(in srgb, var(--color-estado) 18%, white);
-  border-color: color-mix(in srgb, var(--color-estado) 18%, white);
-  color: white;
-}
-
-/* 2. Ajustado: Sin opacidad inicial ni delays largos para evitar reinicios feos al cambiar de pantalla */
-.paso.activo .circulo::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: var(--color-estado);
-  opacity: 1;
-  animation: respirar 2s ease-in-out infinite;
-}
-
-.paso.finalizado .circulo::before {
-  animation: none;
-  opacity: 1;
-}
-
-@keyframes respirar {
-  0% { transform: scale(1.1); }
-  50% { transform: scale(.2); }
-  100% { transform: scale(1.1); }
-}
-
-@keyframes pop {
-  0% { transform: scale(.92); }
-  60% { transform: scale(1.04); }
-  100% { transform: scale(1); }
-}
-
-/* Animación de salida al historial */
-.pedido-card.saliendo {
-  opacity: 0;
-  transform: translateY(12px) scale(.98);
-  max-height: 0;
-  margin-bottom: 0;
-  padding-top: 0;
-  padding-bottom: 0;
-  overflow: hidden;
-  transition:
-    opacity .45s ease,
-    transform .45s ease,
-    max-height .45s ease,
-    margin .45s ease,
-    padding .45s ease;
-}
-
-/* PESTAÑAS Y NAVEGACIÓN DE VISTA */
-.tabs-container {
-  display: flex;
-  background-color: #f1f5f9;
-  border-radius: 12px;
-  padding: 4px;
-  margin-bottom: 20px;
-  gap: 4px;
-}
-
-.tab-btn {
-  flex: 1;
-  padding: 10px 16px;
-  border: none;
-  background: transparent;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #64748b;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-/* 3. Ajustado: Especificidad clara para la pestaña activa */
-.tabs-container .tab-btn.activo {
-  background-color: #ffffff;
-  color: #0f172a;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-}
-
-.sin-pedidos-msj {
-  text-align: center;
-  color: #888;
-  padding: 30px 0;
-  font-size: 14px;
 }

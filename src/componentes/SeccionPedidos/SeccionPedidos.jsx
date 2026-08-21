@@ -3,7 +3,7 @@ import { obtenerPedidosCliente, suscribirseAPedidos } from '../../services/pedid
 import { PedidoCard } from './PedidoCard';
 import "./SeccionPedidos.css";
 
-export const SeccionPedidos = ({ onActualizarCantidadActivos }) => {
+export const SeccionPedidos = () => {
   const [pedidos, setPedidos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [pedidosFinalizados, setPedidosFinalizados] = useState({});
@@ -16,7 +16,7 @@ export const SeccionPedidos = ({ onActualizarCantidadActivos }) => {
       const iniciales = { ...prev };
       datos.forEach(p => {
         if (p.estado === 'entregado' && iniciales[p.id] === undefined) {
-          iniciales[p.id] = true;
+          iniciales[p.id] = false;
         }
       });
       return iniciales;
@@ -54,13 +54,6 @@ export const SeccionPedidos = ({ onActualizarCantidadActivos }) => {
   const historial = ordenados.filter(p => {
     return p.estado === "entregado" && pedidosFinalizados[p.id] === true;
   });
-
-  // Notifica la cantidad exacta de activos al componente Padre (App.jsx)
-  useEffect(() => {
-    if (onActualizarCantidadActivos) {
-      onActualizarCantidadActivos(activos.length);
-    }
-  }, [activos.length, onActualizarCantidadActivos]);
 
   if (cargando) {
     return (

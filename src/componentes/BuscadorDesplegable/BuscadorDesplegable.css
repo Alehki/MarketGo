@@ -1,0 +1,142 @@
+.overlay-buscador {
+  position: fixed;
+  inset: 0;
+  background: #ffffff;
+  z-index: 2500;
+  display: flex;
+  flex-direction: column;
+  animation: slideInDown 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Header superior con alineación idéntica */
+.buscador-header-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #ffffff;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.btn-flecha-atras {
+  background: transparent;
+  border: none;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background 0.15s ease;
+}
+
+.btn-flecha-atras:active {
+  background: #f1f5f9;
+}
+
+/* Input simular al SearchBar de la App */
+.input-busqueda-wrapper {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-busqueda-wrapper input {
+  width: 100%;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  padding: 10px 38px 10px 16px;
+  font-size: 14px;
+  color: #0f172a;
+  outline: none;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.input-busqueda-wrapper input:focus {
+  background: #ffffff;
+  border-color: #cbd5e1;
+}
+
+.input-busqueda-wrapper .icon-lupa {
+  position: absolute;
+  right: 14px;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+/* Cuerpo del Historial */
+.buscador-body {
+  flex: 1;
+  padding: 20px 16px;
+  overflow-y: auto;
+}
+
+.seccion-historial h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 12px 0;
+}
+
+.lista-historial {
+  display: flex;
+  flex-direction: column;
+}
+
+.item-historial {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #f8fafc;
+  cursor: pointer;
+}
+
+.item-historial-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.icon-box {
+  width: 36px;
+  height: 36px;
+  background: #f8fafc;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.item-historial-left span {
+  font-size: 15px;
+  font-weight: 500;
+  color: #334155;
+}
+
+.btn-remove-item {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 14px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.btn-remove-item:active {
+  color: #0f172a;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

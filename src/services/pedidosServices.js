@@ -48,8 +48,11 @@ export function suscribirseAPedidos(callback) {
   let timeout = null;
   const clienteId = obtenerClienteId();
 
+  // Generamos un nombre de canal único por cada componente que se suscribe
+  const canalId = `pedidos-realtime-${clienteId}-${Math.random().toString(36).substring(2, 9)}`;
+
   const channel = supabase
-    .channel("pedidos-realtime")
+    .channel(canalId)
     .on(
       "postgres_changes",
       {
