@@ -1,17 +1,16 @@
 import React from 'react';
 
 export const CategoriaCard = ({ categoria, onSeleccionarCategoria }) => {
-  const { id, nombre } = categoria;
+  const { id, nombre, imagen } = categoria;
 
   return (
     <div 
       className={`card-categoria-home categoria-${id}`}
-      /* 🔴 CAMBIO AQUÍ: Pasamos el objeto 'categoria' completo en lugar de solo el 'id' */
       onClick={() => onSeleccionarCategoria(categoria)}
     >
       <div className="card-categoria-img">
         <img 
-          src={`assets/categorias/${id}.webp`} 
+          src={imagen || `assets/categorias/${id}.webp`} 
           alt={nombre} 
           loading="lazy"
         />

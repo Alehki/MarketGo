@@ -4,7 +4,7 @@
   align-items: center;
   background: var(--amarillo-suave);
   padding: 8px 10px;
-  border-radius: 10px;
+  /* border-radius: 10px; */
 }
 
 .beneficio {

@@ -1,14 +1,15 @@
 /* ================= CARRUSEL PRO ================= */
 .carousel-wrapper {
   width: 100%;
-  margin-top: 10px;
-  padding: 0 10px;
+  /* margin-top: 10px; */
+  /* padding: 0 10px; */
   box-sizing: border-box;
 }
 
 .carousel-container {
   width: 100%;
-  border-radius: var(--radius, 12px);
+  /* border-radius: var(--radius, 12px); */
+  border-radius: 0px 0px 50px 0px;
   overflow: hidden;
   position: relative;
 }

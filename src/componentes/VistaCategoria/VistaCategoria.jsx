@@ -6,6 +6,16 @@ import {
   suscribirseAProductos 
 } from '../../services/productosService';
 import './VistaCategoria.css';
+import { CategoriasPills } from '../CategoriasPills/CategoriasPills.jsx';
+
+// Helper local para normalizar textos y comparar sin errores de tildes/mayúsculas
+function normalizarTexto(texto) {
+  return (texto || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
 
 // Helper local para normalizar los datos de Realtime
 function normalizarProducto(p) {
@@ -19,6 +29,9 @@ function normalizarProducto(p) {
 
 export const VistaCategoria = ({ 
   categoria, 
+  categorias,
+  cargandoCategorias,
+  onSeleccionarCategoria,
   onVolver, 
   carrito = {}, 
   onAgregar, 
@@ -62,10 +75,13 @@ export const VistaCategoria = ({
       setProductos((prevProductos) => {
         const prodNormalizado = normalizarProducto(nuevoProd);
 
-        // Verificamos si al producto le corresponde estar en esta vista
+        // Verificación robusta ignorando tildes y mayúsculas en tiempo real
+        const categoriaProdNormalizada = normalizarTexto(prodNormalizado?.categoria);
+        const nombreCatNormalizado = normalizarTexto(nombreCat);
+
         const leCorrespondeAEstaVista = esSeccionDestacados
           ? (prodNormalizado?.activo && prodNormalizado?.destacado)
-          : (prodNormalizado?.activo && prodNormalizado?.categoria === nombreCat);
+          : (prodNormalizado?.activo && categoriaProdNormalizada === nombreCatNormalizado);
 
         if (eventType === 'UPDATE') {
           if (leCorrespondeAEstaVista) {
@@ -101,6 +117,13 @@ export const VistaCategoria = ({
 
   return (
     <div className="vista-categoria">
+      {/* 🟢 BARRA DE CATEGORÍAS PILLS ARRIBA DE TODO */}
+      <CategoriasPills 
+        categorias={categorias}
+        loading={cargandoCategorias}
+        categoriaSeleccionada={categoria}
+        onSeleccionarCategoria={onSeleccionarCategoria}
+      />
       {/* Header con botón Volver y Título */}
       <div className="categoria-header">
         <button className="btn-volver" onClick={onVolver} aria-label="Volver">

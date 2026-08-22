@@ -23,10 +23,10 @@
   color: #666;
 }
 
-/* --- Grid Responsivo --- */
+/* --- Grid Responsivo (Desktop/Tablet) --- */
 .grid-categorias {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 1.25rem;
 }
 
@@ -41,7 +41,6 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
   cursor: pointer;
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-  /* user-select: none; */
 }
 
 /* Efecto Hover en Tarjeta */
@@ -67,7 +66,6 @@
   transition: transform 0.4s ease;
 }
 
-/* Zoom suave a la imagen en hover */
 .card-categoria-home:hover .card-categoria-img img {
   transform: scale(1.08);
 }
@@ -95,28 +93,41 @@
   transition: transform 0.25s ease, color 0.25s ease;
 }
 
-/* Desplazamiento de la flecha en hover */
 .card-categoria-home:hover .card-categoria-arrow {
   transform: translateX(4px);
   color: #000000;
 }
 
-/* --- Adaptación Mobile --- */
+/* --- Adaptación Mobile (3 Columnas Exactas) --- */
 @media (max-width: 600px) {
+  .seccion-categorias {
+    padding: 1.25rem 0.75rem;
+  }
+
   .grid-categorias {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.85rem;
+    grid-template-columns: repeat(3, 1fr); /* 🟢 AQUÍ ESTÁ EL CAMBIO A 3 COLUMNAS */
+    gap: 0.5rem; /* Gap reducido para que aproveche todo el espacio */
+  }
+
+  .card-categoria-home {
+    border-radius: 12px;
   }
 
   .card-categoria-img {
-    height: 130px;
+    height: 90px; /* Reducimos la altura de la imagen para adaptar a 3 columnas */
   }
 
   .card-categoria-info {
-    padding: 0.75rem 0.85rem;
+    padding: 0.5rem 0.4rem;
   }
 
   .card-categoria-nombre {
-    font-size: 0.9rem;
+    font-size: 0.75rem; /* Fuente más chica para que entre bien */
+    text-align: center;
+    width: 100%;
+  }
+
+  .card-categoria-arrow {
+    display: none; /* Ocultamos la flecha en mobile para no apretar el texto */
   }
 }

@@ -1,0 +1,120 @@
+/* Contenedor fijo flotante arriba del menú inferior */
+.cart-floating-bar-container {
+  position: fixed;
+  bottom: 60px; /* Ajusta esta altura según el alto exacto de tu barra de navegación inferior */
+  left: 0;
+  right: 0;
+  z-index: 99; /* Por encima del contenido, por debajo de modales */
+  padding: 0 12px 10px 12px;
+  pointer-events: none; /* Permite clics por fuera si el padding cubre área libre */
+}
+
+/* La barra interactiva principal */
+.cart-floating-bar {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #121826; /* Oscuro sobrio para contrastar */
+  color: #ffffff;
+  padding: 10px 14px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  /* user-select: none; */
+
+  /* Animación suave de entrada/salida */
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cart-floating-bar:active {
+  transform: scale(0.98);
+}
+
+/* Sección izquierda (Icono + Info) */
+.cart-floating-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cart-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffc107; /* Amarillo marca MarketGO */
+}
+
+.cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background-color: #ffc107;
+  color: #121826;
+  font-size: 0.7rem;
+  font-weight: 800;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+}
+
+/* Textos de cantidad y total */
+.cart-text-summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+}
+
+.cart-items-count {
+  color: #d1d5db;
+  font-weight: 500;
+}
+
+.cart-dot-separator {
+  color: #6b7280;
+}
+
+.cart-total-price {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* Botón de acción rápido "Ver Carrito" */
+.cart-floating-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #ffc107; /* Amarillo MarketGO */
+  color: #121826;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+}
+
+.cart-floating-btn:hover {
+  background-color: #e0a800;
+}
+
+/* Animación de entrada */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -19,6 +19,8 @@ import { BottomNav } from "./componentes/BottomNav/BottomNav.jsx";
 import { VistaCategoria } from "./componentes/VistaCategoria/VistaCategoria.jsx";
 import { SeccionCategoriaHome } from './componentes/SeccionCategoriaHome/SeccionCategoriaHome.jsx';
 import { SeccionBanners } from './componentes/BannerPromo/SeccionBanners.jsx';
+import { CartFloatingBar } from './componentes/CartFloatingBar/CartFloatingBar.jsx';
+// import { CategoriasPills } from './componentes/CategoriasPills/CategoriasPills.jsx';
 
 // Modales
 import { CardModal } from "./componentes/CardModal/CardModal.jsx";
@@ -26,6 +28,7 @@ import { ModalProductoDetalle } from "./componentes/ModalProductoDetalle/ModalPr
 import { SplashScreen } from './componentes/SplashScreen/SplashScreen.jsx';
 import { ModalResumenPedido } from "./componentes/ModalResumenPedido/ModalResumenPedido.jsx";
 import { SeccionPedidos } from './componentes/SeccionPedidos/SeccionPedidos.jsx';
+
 
 const bannerPromo = `${import.meta.env.BASE_URL}bannerPromo.jpg`;
 const faviconSvg = `${import.meta.env.BASE_URL}favicon.svg`;
@@ -226,6 +229,9 @@ function App() {
           {categoriaSeleccionada && (
             <VistaCategoria 
               categoria={categoriaSeleccionada}
+              categorias={categorias}                  /* 🟢 Le pasás la lista global */
+              cargandoCategorias={cargandoCategorias}  /* 🟢 Estado de carga */
+              onSeleccionarCategoria={handleAbrirCategoria} /* 🟢 Permite cambiar entre categorías directo */
               onVolver={handleVolverDeCategoria}
               carrito={carrito}
               onAgregar={agregarItem}
@@ -237,8 +243,21 @@ function App() {
 
           {/* Contenido Completo Home */}
           <div style={{ display: categoriaSeleccionada ? 'none' : 'block' }}>
+  
+          {/* CATEGORÍAS RÁPIDAS (PILLS) */}
+          {/* <CategoriasPills 
+            categorias={categorias}
+            loading={cargandoCategorias}
+            onSeleccionarCategoria={handleAbrirCategoria}
+          /> */}
             <BarraBeneficios />
             <Carrusel />
+
+            <Categorias 
+              categorias={categorias}
+              loading={cargandoCategorias}
+              onSeleccionarCategoria={handleAbrirCategoria}
+            />
             
             {cargandoDestacados ? (
               <p style={{ textAlign: 'center', padding: '1rem' }}>Cargando destacados...</p>
@@ -256,11 +275,11 @@ function App() {
               />
             )}
 
-            <Categorias 
+            {/* <Categorias 
               categorias={categorias}
               loading={cargandoCategorias}
               onSeleccionarCategoria={handleAbrirCategoria}
-            />
+            /> */}
 
             <SeccionBanners 
               banners={BANNERS_PROMO}
@@ -341,6 +360,15 @@ function App() {
         onRestar={(id) => restarItem(id)}
         onEliminar={handleEliminarDesdeDetalle}
       />
+
+      {/* BARRA FLOTANTE DEL CARRITO */}
+      {!modalCarritoAbierta && !modalResumenAbierta && (
+        <CartFloatingBar 
+          totalItems={cantidadTotalItems}
+          totalPrice={total}
+          onOpenCart={() => setModalCarritoAbierta(true)}
+        />
+      )}
 
       <BottomNav 
         tabActiva={tabActiva} 

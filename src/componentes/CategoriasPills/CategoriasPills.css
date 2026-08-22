@@ -1,0 +1,70 @@
+.categorias-pills-wrapper {
+  width: 100%;
+  padding: 8px 0;
+  background-color: transparent;
+}
+
+/* Carrusel horizontal con scroll suave e invisible */
+.categorias-pills-scroll {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 16px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  /* Ocultar barra de scroll */
+  scrollbar-width: none; /* Firefox */
+}
+
+.categorias-pills-scroll::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Item individual en formato cápsula/pill */
+.categoria-pill-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 6px 14px 6px 8px;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+  flex-shrink: 0; /* Evita que las píldoras se aplasten */
+}
+
+.categoria-pill-item:active {
+  transform: scale(0.96);
+  background-color: #f9fafb;
+}
+
+/* Imagen en miniatura */
+.categoria-pill-img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+/* Texto de la categoría */
+.categoria-pill-nombre {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* Estado seleccionado/activo de la píldora */
+.categoria-pill-item.activa {
+  background-color: #121826; /* O el color que prefieras de tu marca */
+  border-color: #121826;
+  color: #ffffff;
+}
+
+.categoria-pill-item.activa .categoria-pill-nombre {
+  color: #ffffff;
+  font-weight: 700;
+}

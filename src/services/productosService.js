@@ -1,30 +1,71 @@
 import { supabase } from "../lib/supabaseClient";
 
-// Helper interno para formatear imagenes y colores
-function normalizarProducto(p) {
-  return {
-    ...p,
-    imagenes: Array.isArray(p.imagenes)
-      ? p.imagenes
-      : (p.imagenes ? [p.imagenes] : []),
-    colores: Array.isArray(p.colores)
-      ? p.colores
-      : (p.colores ? [p.colores] : [])
-  };
+// Helper único para remover acentos, tildes, mayúsculas y espacios extra
+function removerAcentos(texto) {
+  return (texto || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
 }
 
-export async function obtenerProductos() {
-  const { data, error } = await supabase
-    .from("productos")
-    .select("*")
-    .eq("activo", true);
+async function obtenerDatosCompletos() {
+  const [
+    { data: productos, error: errProd },
+    { data: subcategorias, error: errSub },
+    { data: categorias, error: errCat }
+  ] = await Promise.all([
+    supabase.from("productos").select("*").eq("activo", true),
+    supabase.from("subcategorias").select("*"),
+    supabase.from("categorias").select("*")
+  ]);
 
-  if (error) {
-    console.error("Error al obtener productos desde Supabase:", error);
+  // 👀 Veamos qué trajo cada tabla y si hay algún error de permisos o conexión
+  console.log('🔍 [DIAGNÓSTICO SUPABASE]:', {
+    productosCount: productos?.length || 0,
+    errProd,
+    subcategoriasCount: subcategorias?.length || 0,
+    errSub,
+    categoriasCount: categorias?.length || 0,
+    errCat
+  });
+
+  if (errProd || errSub || errCat) {
+    console.error("Error al obtener datos desde Supabase:", { errProd, errSub, errCat });
     return [];
   }
 
-  return data.map(normalizarProducto);
+  // 1. Mapear categorías por su ID
+  const categoriasMap = new Map((categorias || []).map(c => [Number(c.id), c]));
+  
+  // 2. Mapear subcategorías vinculándolas con su categoría padre
+  const subcategoriasMap = new Map((subcategorias || []).map(s => {
+    const categoriaPadre = categoriasMap.get(Number(s.categoria_id)) || null;
+    return [Number(s.id), { ...s, categorias: categoriaPadre }];
+  }));
+
+  // 3. Cruzar cada producto con su subcategoría
+  return (productos || []).map(p => {
+    const subcat = subcategoriasMap.get(Number(p.subcategoria_id)) || null;
+    const categoriaNombre = subcat?.categorias?.nombre || "Sin Categoría";
+
+    const imagenPrincipal = p.imagen_url || (Array.isArray(p.imagenes) ? p.imagenes[0] : null) || `assets/productos/${p.id}.webp`;
+    const galeriaImagenes = Array.isArray(p.imagenes) && p.imagenes.length > 0 ? p.imagenes : [imagenPrincipal];
+
+    return {
+      ...p,
+      imagen_url: imagenPrincipal,
+      imagenes: galeriaImagenes,
+      colores: Array.isArray(p.colores) ? p.colores : (p.colores ? [p.colores] : []),
+      categoria: categoriaNombre,
+      subcategoria_nombre: subcat?.nombre || null,
+      subcategorias: subcat
+    };
+  });
+}
+
+export async function obtenerProductos() {
+  return await obtenerDatosCompletos();
 }
 
 export async function obtenerListas() {
@@ -32,7 +73,6 @@ export async function obtenerListas() {
   return agruparPorCategoria(productos);
 }
 
-// Helper interno
 function agruparPorCategoria(productos) {
   const resultado = {};
 
@@ -47,52 +87,51 @@ function agruparPorCategoria(productos) {
 }
 
 export async function obtenerProductosDestacados() {
-  const { data, error } = await supabase
-    .from("productos")
-    .select("*")
-    .eq("activo", true)
-    .eq("destacado", true);
-
-  if (error) {
-    console.error("Error al obtener destacados:", error);
+  try {
+    const productos = await obtenerDatosCompletos();
+    return productos.filter(p => p.destacado === true);
+  } catch (err) {
+    console.error('Excepción en obtenerProductosDestacados:', err);
     return [];
   }
-
-  return data.map(normalizarProducto);
 }
 
-// Nueva función para traer productos por categoría
-export async function obtenerProductosPorCategoria(categoriaNombre) {
-  if (!categoriaNombre) return [];
+export async function obtenerProductosPorCategoria(nombreCategoria) {
+  try {
+    if (!nombreCategoria) return [];
 
-  const { data, error } = await supabase
-    .from("productos")
-    .select("*")
-    .eq("activo", true)
-    .eq("categoria", categoriaNombre);
+    const productos = await obtenerDatosCompletos();
+    const busqueda = removerAcentos(nombreCategoria);
 
-  if (error) {
-    console.error(`Error al obtener productos de la categoría ${categoriaNombre}:`, error);
+    // 👀 Miremos qué categorías tienen TODOS los productos normalizados
+    console.log('📦 [LISTA DE CATEGORÍAS EN PRODUCTOS]:', [...new Set(productos.map(p => p.categoria))]);
+    console.log(`🔍 [Filtro] Buscando categoría normalizada: "${busqueda}" (Original: "${nombreCategoria}")`);
+
+    return productos.filter(p => removerAcentos(p.categoria) === busqueda);
+  } catch (err) {
+    console.error('Excepción en obtenerProductosPorCategoria:', err);
     return [];
   }
-
-  return data.map(normalizarProducto);
 }
 
 export async function obtenerCategorias() {
-  const productos = await obtenerProductos();
+  const { data: categoriasDB, error } = await supabase
+    .from("categorias")
+    .select("*");
 
-  // 1. Extraemos todas las categorías sin repetir
-  const categoriasUnicas = [...new Set(productos.map((p) => p.categoria))].filter(Boolean);
+  if (error) {
+    console.error("Error al consultar la tabla 'categorias':", error);
+    return [];
+  }
 
-  // 2. Mapeamos la estructura para CategoriaCard
-  return categoriasUnicas.map((nombre, index) => {
-    const primerProd = productos.find((p) => p.categoria === nombre);
+  return (categoriasDB || []).map((cat) => {
+    const slugNormalizado = cat.slug || removerAcentos(cat.nombre).replace(/\s+/g, "_");
 
     return {
-      id: nombre || index,
-      nombre: nombre,
-      imagen: primerProd?.imagenes?.[0] || ""
+      id: cat.id,
+      nombre: cat.nombre,
+      slug: slugNormalizado,
+      imagen: cat.imagen_url || `assets/categorias/${slugNormalizado}.webp`
     };
   });
 }
@@ -110,7 +149,6 @@ export function suscribirseAProductos(callback) {
         table: 'productos'
       },
       (payload) => {
-        // Le pasamos el payload con la info del cambio (new, old, eventType)
         callback(payload); 
       }
     )

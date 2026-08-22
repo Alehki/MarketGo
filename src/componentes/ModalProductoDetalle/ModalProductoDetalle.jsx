@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ControlesCantidad } from '../ControlesCantidad/ControlesCantidad.jsx';
-import { ModalEliminar } from '../ModalEliminar/ModalEliminar.jsx'; // Importamos tu modal de eliminar
+import { ModalEliminar } from '../ModalEliminar/ModalEliminar.jsx';
 import './ModalProductoDetalle.css';
 
 export const ModalProductoDetalle = ({ 
@@ -13,20 +13,70 @@ export const ModalProductoDetalle = ({
   onEliminar 
 }) => {
   const [imagenActiva, setImagenActiva] = useState(0);
-  const [mostrarModalEliminar, setMostrarModalEliminar] = useState(false); // Estado para la modal de eliminación
+  const [mostrarModalEliminar, setMostrarModalEliminar] = useState(false);
+  
+  // Variables para detectar el deslizamiento táctil (swipe)
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+
+  // IMPORTANTE: Cada vez que abramos el modal o cambie el producto, reseteamos la foto visible a la primera (0)
+  useEffect(() => {
+    if (isOpen) {
+      setImagenActiva(0);
+    }
+  }, [isOpen, producto?.id]);
 
   if (!isOpen || !producto) return null;
 
-  const imagenes = producto.imagenes?.length ? producto.imagenes : [producto.img || ''];
+  const imagenes = Array.isArray(producto.imagenes) && producto.imagenes.length > 0 
+    ? producto.imagenes 
+    : [producto.imagen_url || producto.img || ''];
+
   const stockMaximo = producto.stock ?? 0;
   const sinStock = stockMaximo <= 0;
   const alcanzoStock = stockMaximo > 0 && cantidad >= stockMaximo;
 
-  // Confirmación desde la modal
   const handleConfirmarEliminacion = () => {
     onEliminar?.(producto.id);
     setMostrarModalEliminar(false);
     onClose?.();
+  };
+
+  // Navegación de fotos
+  const fotoSiguiente = (e) => {
+    e?.stopPropagation();
+    setImagenActiva((prev) => (prev + 1) % imagenes.length);
+  };
+
+  const fotoAnterior = (e) => {
+    e?.stopPropagation();
+    setImagenActiva((prev) => (prev - 1 + imagenes.length) % imagenes.length);
+  };
+
+  // Manejo de gestos táctiles (Swipe en celulares)
+  const handleTouchStart = (e) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distancia = touchStart - touchEnd;
+    const esSwipeIzquierda = distancia > 50;  // Deslizar hacia la izquierda -> Siguiente foto
+    const esSwipeDerecha = distancia < -50; // Deslizar hacia la derecha -> Foto anterior
+
+    if (esSwipeIzquierda && imagenes.length > 1) {
+      fotoSiguiente();
+    }
+    if (esSwipeDerecha && imagenes.length > 1) {
+      fotoAnterior();
+    }
+
+    setTouchStart(0);
+    setTouchEnd(0);
   };
 
   return (
@@ -37,7 +87,20 @@ export const ModalProductoDetalle = ({
 
           {/* Galería de Imágenes */}
           <div className="galeria-imagenes">
-            <div className="imagen-principal-container">
+            <div 
+              className="imagen-principal-container"
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
+              {/* Flechas táctiles / escritorio (solo si hay más de 1 imagen) */}
+              {imagenes.length > 1 && (
+                <>
+                  <button className="flecha-modal flecha-izq" onClick={fotoAnterior}>‹</button>
+                  <button className="flecha-modal flecha-der" onClick={fotoSiguiente}>›</button>
+                </>
+              )}
+
               <img 
                 src={imagenes[imagenActiva]} 
                 alt={producto.nombre} 
@@ -45,6 +108,7 @@ export const ModalProductoDetalle = ({
               />
             </div>
 
+            {/* Indicadores / Dots */}
             {imagenes.length > 1 && (
               <div className="indicadores-galeria">
                 {imagenes.map((_, idx) => (
@@ -75,14 +139,13 @@ export const ModalProductoDetalle = ({
                 alcanzoStock={alcanzoStock}
                 onAgregar={() => onAgregar?.(producto)}
                 onRestar={() => onRestar?.(producto.id)}
-                onEliminar={() => setMostrarModalEliminar(true)} /* Abre tu ModalEliminar */
+                onEliminar={() => setMostrarModalEliminar(true)}
               />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Tu componente reutilizable de confirmación */}
       <ModalEliminar
         isOpen={mostrarModalEliminar}
         nombreProducto={producto.nombre}

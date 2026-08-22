@@ -7,15 +7,13 @@ import {
 } from '../../services/productosService';
 import './SeccionCategoriaHome.css';
 
-// Helper local para dar formato correcto a arrays al recibir datos crudos de Realtime
-function normalizarProducto(p) {
-  if (!p) return p;
-  return {
-    ...p,
-    imagenes: Array.isArray(p.imagenes) ? p.imagenes : (p.imagenes ? [p.imagenes] : []),
-    colores: Array.isArray(p.colores) ? p.colores : (p.colores ? [p.colores] : [])
-  };
-}
+const removerAcentos = (texto) => {
+  return (texto || '')
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+};
 
 export const SeccionCategoriaHome = ({ 
   titulo, 
@@ -44,6 +42,8 @@ export const SeccionCategoriaHome = ({
         datos = await obtenerProductosPorCategoria(nombreCategoria);
       }
 
+      console.log(`[SeccionCategoriaHome] Categoria "${nombreCategoria || titulo}":`, datos);
+
       if (!cancelado) {
         setProductos(datos ? datos.slice(0, 6) : []);
         setCargando(false);
@@ -52,17 +52,23 @@ export const SeccionCategoriaHome = ({
 
     fetchProductos();
 
-    // Escuchar el evento payload en vivo para modificar la lista en memoria sin re-cargar la API
     const canal = suscribirseAProductos((payload) => {
       const { eventType, new: nuevoProd, old: viejoProd } = payload;
 
       setProductos((prevProductos) => {
-        const prodNormalizado = normalizarProducto(nuevoProd);
+        const imgPrincipal = nuevoProd?.imagen_url || (Array.isArray(nuevoProd?.imagenes) ? nuevoProd.imagenes[0] : null);
+        const prodNormalizado = nuevoProd ? {
+          ...nuevoProd,
+          imagen_url: imgPrincipal,
+          imagenes: Array.isArray(nuevoProd.imagenes) ? nuevoProd.imagenes : [imgPrincipal]
+        } : null;
 
-        // Evaluar si al producto le corresponde estar en esta sección
+        const catProd = removerAcentos(prodNormalizado?.categoria);
+        const catBuscada = removerAcentos(nombreCategoria);
+
         const leCorrespondeAEstaSeccion = esDestacados 
           ? (prodNormalizado?.activo && prodNormalizado?.destacado)
-          : (prodNormalizado?.activo && prodNormalizado?.categoria === nombreCategoria);
+          : (prodNormalizado?.activo && catProd === catBuscada);
 
         if (eventType === 'UPDATE') {
           if (leCorrespondeAEstaSeccion) {
@@ -73,7 +79,6 @@ export const SeccionCategoriaHome = ({
               return [...prevProductos, prodNormalizado].slice(0, 6);
             }
           } else {
-            // Si el producto se desactivó o cambió de categoría, lo removemos limpiamente
             return prevProductos.filter(p => p.id !== prodNormalizado.id);
           }
         }
@@ -96,8 +101,6 @@ export const SeccionCategoriaHome = ({
     };
   }, [nombreCategoria, esDestacados]);
 
-  if (!cargando && productos.length === 0) return null;
-
   const handleClickMostrarTodos = () => {
     if (onMostrarTodos) {
       onMostrarTodos({ nombre: nombreCategoria || titulo });
@@ -117,7 +120,11 @@ export const SeccionCategoriaHome = ({
 
       <div className="carrusel-horizontal-productos">
         {cargando ? (
-          <p style={{ padding: '1rem', fontSize: '0.9rem' }}>Cargando...</p>
+          <p style={{ padding: '1rem', fontSize: '0.9rem' }}>Cargando productos...</p>
+        ) : productos.length === 0 ? (
+          <p style={{ padding: '1rem', fontSize: '0.9rem', color: '#888' }}>
+            No hay productos disponibles en esta categoría.
+          </p>
         ) : (
           productos.map((prod) => (
             <div key={prod.id} className="item-carrusel-producto">
