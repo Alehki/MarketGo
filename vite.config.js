@@ -13,8 +13,8 @@ export default defineConfig({
         name: 'MarketGo',
         short_name: 'MarketGo',
         description: 'Tu tienda y app de pedidos online',
-        theme_color: '#eab308',
-        background_color: '#eab308',
+        theme_color: '#facc15',
+        background_color: '#FFD600',
         display: 'standalone',
         start_url: '/MarketGo/', // Importante que respete la base
         scope: '/MarketGo/',     // Importante para que el service worker controle la ruta
