@@ -3,10 +3,12 @@ import { ProductoCard } from '../ProductoCard/ProductoCard.jsx';
 import { 
   obtenerProductosPorCategoria, 
   obtenerProductosDestacados, 
-  suscribirseAProductos 
+  suscribirseAProductos,
+  obtenerSubcategoriasPorCategoria
 } from '../../services/productosService';
 import './VistaCategoria.css';
 import { CategoriasPills } from '../CategoriasPills/CategoriasPills.jsx';
+import { SubcategoriasPills } from '../SubcategoriasPills/SubcategoriasPills.jsx';
 
 // Helper local para normalizar textos y comparar sin errores de tildes/mayúsculas
 function normalizarTexto(texto) {
@@ -39,12 +41,52 @@ export const VistaCategoria = ({
   onEliminar,
   onAbrirProducto 
 }) => {
+
   const [productos, setProductos] = useState([]);
   const [cargando, setCargando] = useState(true);
+
+  //------------------
+
+  const [subcategorias, setSubcategorias] = useState([]);                  // Guarda la lista de subcategorías de la categoría actual
+  const [subcategoriaSeleccionada, setSubcategoriaSeleccionada] = useState(null); // Guarda cuál pill de subcategoría clickeó el usuario (o null si no hay ninguna)
+  const [cargandoSubcategorias, setCargandoSubcategorias] = useState(false);     // Controla el estado de carga mientras busca las subcategorías
 
   const nombreCat = typeof categoria === 'string' ? categoria : categoria?.nombre;
   const esSeccionDestacados = nombreCat === "Los más vendidos" || nombreCat === "Destacados";
 
+  const categoriaId = categoria?.id;
+
+  useEffect(() => {
+    let cancelado = false;
+
+    async function cargarSubcats() {
+      if (!categoriaId || esSeccionDestacados) {
+        setSubcategorias([]);
+        setSubcategoriaSeleccionada(null);
+        return;
+      }
+
+      setCargandoSubcategorias(true);
+      try {
+        const dataSub = await obtenerSubcategoriasPorCategoria(categoriaId);
+        if (!cancelado) {
+          setSubcategorias(dataSub || []);
+          setSubcategoriaSeleccionada(null);
+        }
+      } catch (error) {
+        console.error("Error al cargar subcategorías:", error);
+      } finally {
+        if (!cancelado) setCargandoSubcategorias(false);
+      }
+    }
+
+    cargarSubcats();
+
+    return () => {
+      cancelado = true;
+    };
+  }, [categoriaId, esSeccionDestacados]);
+  // ---------------
   useEffect(() => {
     let cancelado = false;
 
@@ -115,6 +157,11 @@ export const VistaCategoria = ({
     };
   }, [categoria, nombreCat, esSeccionDestacados]);
 
+  // 🟢 Filtramos los productos si el usuario seleccionó una subcategoría específica
+  const productosFiltrados = subcategoriaSeleccionada 
+    ? productos.filter(p => Number(p.subcategoria_id) === Number(subcategoriaSeleccionada.id))
+    : productos;
+
   return (
     <div className="vista-categoria">
       {/* 🟢 BARRA DE CATEGORÍAS PILLS ARRIBA DE TODO */}
@@ -124,6 +171,15 @@ export const VistaCategoria = ({
         categoriaSeleccionada={categoria}
         onSeleccionarCategoria={onSeleccionarCategoria}
       />
+      {/* Barra de Subcategorías */}
+      {!esSeccionDestacados && (
+        <SubcategoriasPills 
+          subcategorias={subcategorias}
+          loading={cargandoSubcategorias}
+          subcategoriaSeleccionada={subcategoriaSeleccionada}
+          onSeleccionarSubcategoria={(subcat) => setSubcategoriaSeleccionada(subcat)}
+        />
+      )}
       {/* Header con botón Volver y Título */}
       <div className="categoria-header">
         <button className="btn-volver" onClick={onVolver} aria-label="Volver">
@@ -140,11 +196,11 @@ export const VistaCategoria = ({
       <div className="categoria-body">
         {cargando ? (
           <p className="mensaje-carga">Cargando productos...</p>
-        ) : productos.length === 0 ? (
+        ) : productosFiltrados.length === 0 ? (
           <p className="mensaje-vacio">No hay productos disponibles en esta sección.</p>
         ) : (
           <div className="productos-grid">
-            {productos.map((prod) => (
+            {productosFiltrados.map((prod) => (
               <ProductoCard
                 key={prod.id}
                 producto={prod}

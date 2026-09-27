@@ -1,0 +1,67 @@
+/* Contenedor principal con un padding sutil y separación visual */
+.subcategorias-pills-wrapper {
+  width: 100%;
+  padding: 8px 0 14px 0;
+  background-color: transparent;
+  display: flex;
+  justify-content: center; /* O cámbialo a 'flex-start' si prefieres que comiencen desde la izquierda */
+}
+
+/* Área de desplazamiento horizontal */
+.subcategorias-pills-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 16px;
+  max-width: 100%;
+  scrollbar-width: none; /* Oculta la barra en Firefox */
+}
+
+/* Ocultar barra de desplazamiento en Chrome, Safari y Edge */
+.subcategorias-pills-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Estilo base de cada píldora de subcategoría */
+.subcategoria-pill-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  background-color: #f1f3f5; /* Fondo gris claro neutro */
+  border: 1px solid #e9ecef;
+  border-radius: 20px; /* Forma de píldora redondeada */
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+/* Texto interno de la píldora */
+.subcategoria-pill-nombre {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #495057;
+  transition: color 0.2s ease-in-out;
+}
+
+/* Efectos al pasar el mouse (Hover) */
+.subcategoria-pill-item:hover {
+  background-color: #e2e6ea;
+  border-color: #ced4da;
+  transform: translateY(-1px);
+}
+
+/* Estado ACTIVO (Cuando el usuario selecciona la subcategoría o "Todas") */
+.subcategoria-pill-item.activa {
+  background-color: #111827; /* Un tono oscuro elegante (puedes adaptarlo al color principal de tu marca) */
+  border-color: #111827;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+.subcategoria-pill-item.activa .subcategoria-pill-nombre {
+  color: #ffffff;
+  font-weight: 600;
+}

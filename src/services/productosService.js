@@ -49,7 +49,12 @@ async function obtenerDatosCompletos() {
     const subcat = subcategoriasMap.get(Number(p.subcategoria_id)) || null;
     const categoriaNombre = subcat?.categorias?.nombre || "Sin Categoría";
 
-    const imagenPrincipal = p.imagen_url || (Array.isArray(p.imagenes) ? p.imagenes[0] : null) || `assets/productos/${p.id}.webp`;
+    // 🟢 ESTRICTO: Solo toma imagen_url si existe y es válida. Si no, queda null/vacío.
+    const imagenPrincipal = (p.imagen_url && p.imagen_url.startsWith('http')) 
+      ? p.imagen_url 
+      : null;
+
+    // const imagenPrincipal = p.imagen_url || (Array.isArray(p.imagenes) ? p.imagenes[0] : null) || `assets/productos/${p.id}.webp`;
     const galeriaImagenes = Array.isArray(p.imagenes) && p.imagenes.length > 0 ? p.imagenes : [imagenPrincipal];
 
     return {
@@ -156,3 +161,20 @@ export function suscribirseAProductos(callback) {
 
   return canal;
 }
+
+
+export const obtenerSubcategoriasPorCategoria = async (categoriaId) => {
+  if (!categoriaId) return [];
+
+  const { data, error } = await supabase
+    .from('subcategorias')
+    .select('*')
+    .eq('categoria_id', categoriaId); // Filtra por la relación de la base de datos
+
+  if (error) {
+    console.error('Error al obtener subcategorías:', error);
+    return [];
+  }
+  
+  return data;
+};

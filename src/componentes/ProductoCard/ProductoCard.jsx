@@ -22,7 +22,7 @@ export const ProductoCard = ({
     onEliminar?.(producto.id);
     setMostrarModalEliminar(false);
   };
-
+  console.log("Objeto producto completo:", producto);
   return (
     <>
       <div 
@@ -33,7 +33,8 @@ export const ProductoCard = ({
         <div className="top-card">
           <div className="imagen-producto">
             <img 
-              src={producto.imagenes?.[0] || producto.img || ''} 
+              // src={producto.imagenes?.[0] || producto.img || ''} 
+              src={producto.imagen_url || ''} 
               alt={producto.nombre} 
               loading="lazy" 
             />
