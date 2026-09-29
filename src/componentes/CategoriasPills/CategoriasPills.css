@@ -68,3 +68,35 @@
   color: #ffffff;
   font-weight: 700;
 }
+
+/* PROPIEDAD CLAVE PARA EL SCROLL */
+
+.categorias-pills-wrapper {
+  width: 100%;
+  overflow: hidden;
+  /* Espaciados que prefieras */
+  padding: 8px 0; 
+}
+
+.categorias-pills-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scroll-behavior: smooth; /* Vital para que el desplazamiento sea fluido */
+  -webkit-overflow-scrolling: touch; /* Mejora la inercia en iOS */
+  padding: 0 16px; /* Margen interno para que el primer y último elemento no peguen contra los bordes */
+  
+  /* Ocultar barra de scroll en navegadores modernos */
+  scrollbar-width: none; /* Firefox */
+}
+
+.categorias-pills-scroll::-webkit-scrollbar {
+  display: none; /* Chrome, Safari y Opera */
+}
+
+.categoria-pill-item {
+  /* Tus estilos actuales de la píldora (flex, bordes, padding, etc.) */
+  flex-shrink: 0; /* Impide que las píldoras se aplasten al hacer scroll */
+  cursor: pointer;
+  /* ... resto de tus estilos ... */
+}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import './CategoriasPills.css';
 
 export const CategoriasPills = ({ 
@@ -7,21 +7,33 @@ export const CategoriasPills = ({
   categoriaSeleccionada = null, 
   onSeleccionarCategoria 
 }) => {
+  const scrollContainerRef = useRef(null);
+  const activeItemRef = useRef(null);
+
+  // Efecto para hacer scroll automático y centrar la píldora activa
+  useEffect(() => {
+    if (activeItemRef.current && scrollContainerRef.current) {
+      activeItemRef.current.scrollIntoView({
+        behavior: 'smooth',
+        inline: 'center',
+        block: 'nearest'
+      });
+    }
+  }, [categoriaSeleccionada, categorias]);
+
   if (loading || !categorias.length) return null;
 
   return (
     <div className="categorias-pills-wrapper">
-      <div className="categorias-pills-scroll">
+      <div className="categorias-pills-scroll" ref={scrollContainerRef}>
         {categorias.map((cat) => {
-          // Comparamos si esta píldora es la categoría activa actualmente
           const esActiva = categoriaSeleccionada?.id === cat.id || categoriaSeleccionada?.nombre === cat.nombre;
-
-          // Usa la URL dinámica de Supabase (cat.imagen) o recurre al fallback local
           const fotoPill = cat.imagen || `assets/categorias/${cat.id}.webp`;
 
           return (
             <button
               key={cat.id}
+              ref={esActiva ? activeItemRef : null} // Asignamos la referencia solo al elemento activo
               className={`categoria-pill-item ${esActiva ? 'activa' : ''}`}
               type="button"
               onClick={() => onSeleccionarCategoria(cat)}
@@ -32,7 +44,6 @@ export const CategoriasPills = ({
                 className="categoria-pill-img"
                 loading="lazy"
                 onError={(e) => {
-                  // Fallback visual por si falla la carga de la imagen
                   e.target.style.display = 'none';
                 }}
               />

@@ -65,3 +65,34 @@
   color: #ffffff;
   font-weight: 600;
 }
+
+/* CLAVE PARA EL SCROLL */
+
+.subcategorias-pills-wrapper {
+  width: 100%;
+  overflow: hidden;
+  padding: 6px 0; /* Espaciado superior e inferior */
+}
+
+.subcategorias-pills-scroll {
+  display: flex;
+  gap: 8px; /* Espacio entre píldoras */
+  overflow-x: auto;
+  scroll-behavior: smooth; /* Vital para que el desplazamiento sea suave */
+  -webkit-overflow-scrolling: touch; /* Inercia fluida en dispositivos táctiles (iOS/Android) */
+  padding: 0 16px; /* Margen a los costados para que no peguen contra los bordes de la pantalla */
+  
+  /* Ocultar la barra de scroll en navegadores modernos */
+  scrollbar-width: none; /* Firefox */
+}
+
+.subcategorias-pills-scroll::-webkit-scrollbar {
+  display: none; /* Chrome, Safari y Edge */
+}
+
+.subcategoria-pill-item {
+  flex-shrink: 0; /* Impide que las píldoras se aplasten o deformen al hacer scroll */
+  cursor: pointer;
+  white-space: nowrap; /* Evita que el texto de la subcategoría salte de línea */
+  /* Aquí puedes mantener o sumar los estilos visuales que ya tengas para el diseño (padding, bordes, colores, etc.) */
+}
