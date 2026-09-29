@@ -55,15 +55,16 @@
   width: 100%;
   height: 180px;
   overflow: hidden;
-  background-color: #f9f9f9;
+  /* background-color: #f9f9f9; */
   position: relative;
 }
 
 .card-categoria-img img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   transition: transform 0.4s ease;
+  /* transform: scale(.8); */
 }
 
 .card-categoria-home:hover .card-categoria-img img {
@@ -130,4 +131,27 @@
   .card-categoria-arrow {
     display: none; /* Ocultamos la flecha en mobile para no apretar el texto */
   }
+}
+
+/* mostrar mas / mostrar menos */
+
+.btn-mostrar-mas {
+  background-color: #f0f0f0;
+  color: #333333;
+  border: none;
+  padding: 0.6rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-mostrar-mas:hover {
+  background-color: #e2e2e2;
+  transform: translateY(-2px);
+}
+
+.btn-mostrar-mas:active {
+  transform: translateY(0);
 }

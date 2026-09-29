@@ -16,8 +16,10 @@ async function obtenerDatosCompletos() {
     { data: categorias, error: errCat }
   ] = await Promise.all([
     supabase.from("productos").select("*").eq("activo", true),
-    supabase.from("subcategorias").select("*"),
-    supabase.from("categorias").select("*")
+    // 🟢 Solo traemos subcategorías activas
+    supabase.from("subcategorias").select("*").eq("activa", true),
+    // 🟢 Solo traemos categorías activas
+    supabase.from("categorias").select("*").eq("activa", true)
   ]);
 
   // 👀 Veamos qué trajo cada tabla y si hay algún error de permisos o conexión
@@ -44,17 +46,22 @@ async function obtenerDatosCompletos() {
     return [Number(s.id), { ...s, categorias: categoriaPadre }];
   }));
 
-  // 3. Cruzar cada producto con su subcategoría
+  // 3. Cruzar cada producto con su subcategoría (y verificar que ambas estén activas)
   return (productos || []).map(p => {
     const subcat = subcategoriasMap.get(Number(p.subcategoria_id)) || null;
-    const categoriaNombre = subcat?.categorias?.nombre || "Sin Categoría";
+    
+    // Si el producto apunta a una subcategoría inactiva (o su categoría lo es), lo descartamos
+    if (!subcat || !subcat.categorias) {
+      return null; 
+    }
+
+    const categoriaNombre = subcat.categorias.nombre;
 
     // 🟢 ESTRICTO: Solo toma imagen_url si existe y es válida. Si no, queda null/vacío.
     const imagenPrincipal = (p.imagen_url && p.imagen_url.startsWith('http')) 
       ? p.imagen_url 
       : null;
 
-    // const imagenPrincipal = p.imagen_url || (Array.isArray(p.imagenes) ? p.imagenes[0] : null) || `assets/productos/${p.id}.webp`;
     const galeriaImagenes = Array.isArray(p.imagenes) && p.imagenes.length > 0 ? p.imagenes : [imagenPrincipal];
 
     return {
@@ -66,7 +73,7 @@ async function obtenerDatosCompletos() {
       subcategoria_nombre: subcat?.nombre || null,
       subcategorias: subcat
     };
-  });
+  }).filter(Boolean); // Limpiamos los nulos
 }
 
 export async function obtenerProductos() {
@@ -122,7 +129,8 @@ export async function obtenerProductosPorCategoria(nombreCategoria) {
 export async function obtenerCategorias() {
   const { data: categoriasDB, error } = await supabase
     .from("categorias")
-    .select("*");
+    .select("*")
+    .eq("activa", true);
 
   if (error) {
     console.error("Error al consultar la tabla 'categorias':", error);
@@ -136,7 +144,8 @@ export async function obtenerCategorias() {
       id: cat.id,
       nombre: cat.nombre,
       slug: slugNormalizado,
-      imagen: cat.imagen_url || `assets/categorias/${slugNormalizado}.webp`
+      imagen: cat.imagen_url || `assets/categorias/${slugNormalizado}.webp`,
+      activa: cat.activa
     };
   });
 }
@@ -162,14 +171,15 @@ export function suscribirseAProductos(callback) {
   return canal;
 }
 
-
 export const obtenerSubcategoriasPorCategoria = async (categoriaId) => {
   if (!categoriaId) return [];
 
+  // 🟢 Traemos únicamente las subcategorías que pertenezcan a la categoría y estén activas
   const { data, error } = await supabase
     .from('subcategorias')
     .select('*')
-    .eq('categoria_id', categoriaId); // Filtra por la relación de la base de datos
+    .eq('categoria_id', categoriaId)
+    .eq('activa', true);
 
   if (error) {
     console.error('Error al obtener subcategorías:', error);

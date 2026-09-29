@@ -1,5 +1,5 @@
-import React from 'react';
-import './SubcategoriasPills.css'; // Puedes reutilizar o adaptar los estilos de las píldoras
+import React, { useEffect, useRef } from 'react';
+import './SubcategoriasPills.css';
 
 export const SubcategoriasPills = ({ 
   subcategorias = [], 
@@ -7,15 +7,32 @@ export const SubcategoriasPills = ({
   subcategoriaSeleccionada = null, 
   onSeleccionarSubcategoria 
 }) => {
+  const scrollContainerRef = useRef(null);
+  const activeItemRef = useRef(null);
+
+  // Efecto para hacer scroll automático y centrar la píldora activa (incluyendo "Todas")
+  useEffect(() => {
+    if (activeItemRef.current && scrollContainerRef.current) {
+      activeItemRef.current.scrollIntoView({
+        behavior: 'smooth',
+        inline: 'center',
+        block: 'nearest'
+      });
+    }
+  }, [subcategoriaSeleccionada, subcategorias]);
+
   // Si está cargando o no hay subcategorías para esta categoría, no renderizamos nada
   if (loading || !subcategorias.length) return null;
 
+  const esTodasActiva = !subcategoriaSeleccionada;
+
   return (
     <div className="subcategorias-pills-wrapper">
-      <div className="subcategorias-pills-scroll">
-        {/* Opcional: Un botón de "Todas" para deseleccionar la subcategoría */}
+      <div className="subcategorias-pills-scroll" ref={scrollContainerRef}>
+        {/* Botón de "Todas" */}
         <button
-          className={`subcategoria-pill-item ${!subcategoriaSeleccionada ? 'activa' : ''}`}
+          ref={esTodasActiva ? activeItemRef : null}
+          className={`subcategoria-pill-item ${esTodasActiva ? 'activa' : ''}`}
           type="button"
           onClick={() => onSeleccionarSubcategoria(null)}
         >
@@ -28,6 +45,7 @@ export const SubcategoriasPills = ({
           return (
             <button
               key={subcat.id}
+              ref={esActiva ? activeItemRef : null}
               className={`subcategoria-pill-item ${esActiva ? 'activa' : ''}`}
               type="button"
               onClick={() => onSeleccionarSubcategoria(subcat)}
