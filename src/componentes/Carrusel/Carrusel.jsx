@@ -42,31 +42,54 @@ const EXTENDED_SLIDES = [
 ];
 
 export const Carrusel = () => {
-  // Empezamos en el índice 1 porque el índice 0 ahora es el clon del último slide
   const [currentIndex, setCurrentIndex] = useState(1);
   const [isTransitioning, setIsTransitioning] = useState(true);
   
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
   const timerRef = useRef(null);
+  const isLockedRef = useRef(false); // Evita superposición de movimientos rápidos
+  const fallbackRef = useRef(null);   // Respaldo por si el navegador ignora el onTransitionEnd
 
   const resetTimer = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
     
     timerRef.current = setInterval(() => {
-      setCurrentIndex((prev) => prev + 1);
+      if (!isLockedRef.current) {
+        handleNext();
+      }
     }, 4000);
   }, []);
+
+  const handleNext = () => {
+    if (isLockedRef.current) return;
+    isLockedRef.current = true;
+    setIsTransitioning(true);
+    setCurrentIndex((prev) => prev + 1);
+    resetTimer();
+  };
+
+  const handlePrev = () => {
+    if (isLockedRef.current) return;
+    isLockedRef.current = true;
+    setIsTransitioning(true);
+    setCurrentIndex((prev) => prev - 1);
+    resetTimer();
+  };
 
   useEffect(() => {
     resetTimer();
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
+      if (fallbackRef.current) clearTimeout(fallbackRef.current);
     };
   }, [resetTimer]);
 
   // Manejar el salto invisible cuando llega a los extremos (clones)
   const handleTransitionEnd = () => {
+    isLockedRef.current = false;
+    if (fallbackRef.current) clearTimeout(fallbackRef.current);
+
     // Si llegó al clon del primer slide (al final del todo)
     if (currentIndex === EXTENDED_SLIDES.length - 1) {
       setIsTransitioning(false);
@@ -78,6 +101,19 @@ export const Carrusel = () => {
       setCurrentIndex(SLIDES.length); // Salto instantáneo al slide real número 3 (último)
     }
   };
+
+  // Fallback de seguridad: Si sales de la categoría y el navegador congela la transición, 
+  // este temporizador destraba el estado automáticamente a los 600ms.
+  useEffect(() => {
+    if (isTransitioning) {
+      if (fallbackRef.current) clearTimeout(fallbackRef.current);
+      fallbackRef.current = setTimeout(() => {
+        if (isLockedRef.current) {
+          handleTransitionEnd();
+        }
+      }, 600);
+    }
+  }, [currentIndex, isTransitioning]);
 
   useEffect(() => {
     if (!isTransitioning) {
@@ -103,22 +139,16 @@ export const Carrusel = () => {
     const minSwipeDistance = 50;
 
     if (distance > minSwipeDistance) {
-      // Swipe hacia la izquierda (siguiente)
-      setIsTransitioning(true);
-      setCurrentIndex((prev) => prev + 1);
-      resetTimer();
+      handleNext();
     } else if (distance < -minSwipeDistance) {
-      // Swipe hacia la derecha (anterior)
-      setIsTransitioning(true);
-      setCurrentIndex((prev) => prev - 1);
-      resetTimer();
+      handlePrev();
     }
 
     touchStartX.current = 0;
     touchEndX.current = 0;
   };
 
-  // Cálculo del índice real para los puntitos (dots) de 0 a SLIDES.length - 1
+  // Cálculo del índice real para los puntitos (dots)
   const getActiveDotIndex = () => {
     if (currentIndex === 0) return SLIDES.length - 1;
     if (currentIndex === EXTENDED_SLIDES.length - 1) return 0;
@@ -165,8 +195,10 @@ export const Carrusel = () => {
             key={index}
             className={`dot ${getActiveDotIndex() === index ? 'active' : ''}`}
             onClick={() => {
+              if (isLockedRef.current) return;
+              isLockedRef.current = true;
               setIsTransitioning(true);
-              setCurrentIndex(index + 1); // +1 por el clon inicial
+              setCurrentIndex(index + 1);
               resetTimer();
             }}
           />
