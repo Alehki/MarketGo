@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 // Hooks
 import { useCarrito } from './hooks/useCarrito';
 import { useCategorias } from './hooks/useCategorias';
+import { useSugerenciasBusqueda } from './hooks/useSugerenciasBusqueda';
 
 // Servicios
 import { obtenerProductosDestacados, suscribirseAProductos } from './services/productosService';
@@ -20,7 +21,7 @@ import { VistaCategoria } from "./componentes/VistaCategoria/VistaCategoria.jsx"
 import { SeccionCategoriaHome } from './componentes/SeccionCategoriaHome/SeccionCategoriaHome.jsx';
 import { SeccionBanners } from './componentes/BannerPromo/SeccionBanners.jsx';
 import { CartFloatingBar } from './componentes/CartFloatingBar/CartFloatingBar.jsx';
-// import { CategoriasPills } from './componentes/CategoriasPills/CategoriasPills.jsx';
+import { VistaResultadosBusqueda } from './componentes/vistaResultadosBusqueda/vistaResultadosBusqueda.jsx';
 
 // Modales
 import { CardModal } from "./componentes/CardModal/CardModal.jsx";
@@ -54,6 +55,15 @@ function App() {
   const [modalResumenAbierta, setModalResumenAbierta] = useState(false);
 
   const [buscadorAbierto, setBuscadorAbierto] = useState(false);
+
+  //  Nuevo estado para lo que tipea en tiempo real
+  const [terminoEscrito, setTerminoEscrito] = useState(''); 
+
+  //  Llamamos al hook de sugerencias con el texto en tiempo real
+  const { sugerencias, cargando: cargandoSugerencias } = useSugerenciasBusqueda(terminoEscrito);
+
+  // Para el vistaGenralDeProductos
+  const [terminoBusquedaActiva, setTerminoBusquedaActiva] = useState(null);
   
 
   const handleIrAPagar = () => {
@@ -164,6 +174,7 @@ function App() {
   useEffect(() => {
     const handlePopState = () => {
       setCategoriaSeleccionada(null);
+      setTerminoBusquedaActiva(null);
     };
 
     window.addEventListener('popstate', handlePopState);
@@ -200,6 +211,19 @@ function App() {
     }
   };
 
+  // ------
+
+  const handleEjecutarBusquedaGlobal = (textoBuscado) => {
+    // 1. Guardamos el estado de que estamos buscando esto
+    setTerminoBusquedaActiva(textoBuscado);
+    
+    // 2. Si querés que funcione con el botón de atrás del navegador igual que las categorías:
+    window.history.pushState({ vista: 'busqueda', termino: textoBuscado }, '');
+    
+    // 3. Subimos arriba del todo para que vea bien la grilla de resultados
+    window.scrollTo(0, 0);
+  };
+
   return (
     <div className="app-container">
       <SplashScreen duracion={3200} />
@@ -219,98 +243,113 @@ function App() {
           setBuscadorAbierto(false);
           setModalCarritoAbierta(true);
         }}
+        terminoEscrito={terminoEscrito}                  
+        onTerminoChange={setTerminoEscrito}               
+        sugerencias={sugerencias}                         
+        cargandoSugerencias={cargandoSugerencias}          
+        onSearch={(texto) => {
+          setTerminoEscrito('');                          {/* Limpiamos al buscar completo */}
+          handleEjecutarBusquedaGlobal(texto);
+        }}
+        onSelectSugerencia={(nombreProducto) => {         {/* 🟢 Cambiamos a onSelectSugerencia */}
+          setTerminoEscrito('');
+          setBuscadorAbierto(false);
+          handleEjecutarBusquedaGlobal(nombreProducto);   {/* 🟢 Dispara la búsqueda global */}
+        }}
       />
 
       <main className="main-content">
         {/* Pestaña Inicio */}
         <div style={{ display: tabActiva === 'inicio' ? 'block' : 'none' }}>
           
-          {/* Vista Categoría */}
-          {categoriaSeleccionada && (
-            <VistaCategoria 
-              categoria={categoriaSeleccionada}
-              categorias={categorias}                  /* 🟢 Le pasás la lista global */
-              cargandoCategorias={cargandoCategorias}  /* 🟢 Estado de carga */
-              onSeleccionarCategoria={handleAbrirCategoria} /* 🟢 Permite cambiar entre categorías directo */
-              onVolver={handleVolverDeCategoria}
+          {/* 1. VISTA DE BÚSQUEDA GLOBAL */}
+          {terminoBusquedaActiva ? (
+            <VistaResultadosBusqueda 
+              terminoBusqueda={terminoBusquedaActiva}
+              onVolver={() => setTerminoBusquedaActiva(null)} 
+              onSelectProduct={(producto) => setProductoSeleccionado(producto)}
               carrito={carrito}
-              onAgregar={agregarItem}
-              onRestar={restarItem}
+              onAgregar={agregarItem}    
+              onRestar={restarItem}        
               onEliminar={eliminarItem}
-              onAbrirProducto={(id, prod) => setProductoSeleccionado(prod)}
             />
+          ) : (
+            <>
+              {/* 2. VISTA DE CATEGORÍA */}
+              {categoriaSeleccionada && (
+                <VistaCategoria 
+                  categoria={categoriaSeleccionada}
+                  categorias={categorias}                    
+                  cargandoCategorias={cargandoCategorias}   
+                  onSeleccionarCategoria={handleAbrirCategoria} 
+                  onVolver={handleVolverDeCategoria}
+                  carrito={carrito}
+                  onAgregar={agregarItem}
+                  onRestar={restarItem}
+                  onEliminar={eliminarItem}
+                  onAbrirProducto={(id, prod) => setProductoSeleccionado(prod)}
+                />
+              )}
+
+              {/* 3. HOME DE SIEMPRE (Se oculta si hay categoría seleccionada) */}
+              <div style={{ display: categoriaSeleccionada ? 'none' : 'block' }}>
+                <BarraBeneficios />
+                <Carrusel />
+
+                <Categorias 
+                  categorias={categorias}
+                  loading={cargandoCategorias}
+                  onSeleccionarCategoria={handleAbrirCategoria}
+                />
+                
+                {cargandoDestacados ? (
+                  <p style={{ textAlign: 'center', padding: '1rem' }}>Cargando destacados...</p>
+                ) : (
+                  <Destacados 
+                    productos={productosDestacados}
+                    carrito={carrito}
+                    onAgregar={(id, prod) => agregarItem(prod)}
+                    onRestar={(id) => restarItem(id)}
+                    onEliminar={(id) => eliminarItem(id)}
+                    onAbrirProducto={(id) => {
+                      const prod = productosDestacados.find(p => p.id === id);
+                      if (prod) setProductoSeleccionado(prod);
+                    }}
+                  />
+                )}
+
+                <SeccionBanners 
+                  banners={BANNERS_PROMO}
+                  onSeleccionarBanner={(banner) => {
+                    handleAbrirCategoria({ nombre: banner.categoriaDestino });
+                  }}
+                />
+
+                <SeccionCategoriaHome 
+                  titulo="Los más vendidos"
+                  nombreCategoria="Los más vendidos"
+                  esDestacados={true}
+                  carrito={carrito}
+                  onAgregar={agregarItem}
+                  onRestar={restarItem}
+                  onEliminar={eliminarItem}
+                  onAbrirProducto={(id, prod) => setProductoSeleccionado(prod)}
+                  onMostrarTodos={(cat) => handleAbrirCategoria(cat)} 
+                />
+
+                <SeccionCategoriaHome 
+                  titulo="Bebidas e Hidratación"
+                  nombreCategoria="almacen"
+                  carrito={carrito}
+                  onAgregar={agregarItem}
+                  onRestar={restarItem}
+                  onEliminar={eliminarItem}
+                  onAbrirProducto={(id, prod) => setProductoSeleccionado(prod)}
+                  onMostrarTodos={(cat) => handleAbrirCategoria(cat)} 
+                />
+              </div>
+            </>
           )}
-
-          {/* Contenido Completo Home */}
-          <div style={{ display: categoriaSeleccionada ? 'none' : 'block' }}>
-  
-          {/* CATEGORÍAS RÁPIDAS (PILLS) */}
-          {/* <CategoriasPills 
-            categorias={categorias}
-            loading={cargandoCategorias}
-            onSeleccionarCategoria={handleAbrirCategoria}
-          /> */}
-            <BarraBeneficios />
-            <Carrusel />
-
-            <Categorias 
-              categorias={categorias}
-              loading={cargandoCategorias}
-              onSeleccionarCategoria={handleAbrirCategoria}
-            />
-            
-            {cargandoDestacados ? (
-              <p style={{ textAlign: 'center', padding: '1rem' }}>Cargando destacados...</p>
-            ) : (
-              <Destacados 
-                productos={productosDestacados}
-                carrito={carrito}
-                onAgregar={(id, prod) => agregarItem(prod)}
-                onRestar={(id) => restarItem(id)}
-                onEliminar={(id) => eliminarItem(id)}
-                onAbrirProducto={(id) => {
-                  const prod = productosDestacados.find(p => p.id === id);
-                  if (prod) setProductoSeleccionado(prod);
-                }}
-              />
-            )}
-
-            {/* <Categorias 
-              categorias={categorias}
-              loading={cargandoCategorias}
-              onSeleccionarCategoria={handleAbrirCategoria}
-            /> */}
-
-            <SeccionBanners 
-              banners={BANNERS_PROMO}
-              onSeleccionarBanner={(banner) => {
-                handleAbrirCategoria({ nombre: banner.categoriaDestino });
-              }}
-            />
-
-            <SeccionCategoriaHome 
-              titulo="Los más vendidos"
-              nombreCategoria="Los más vendidos"
-              esDestacados={true}
-              carrito={carrito}
-              onAgregar={agregarItem}
-              onRestar={restarItem}
-              onEliminar={eliminarItem}
-              onAbrirProducto={(id, prod) => setProductoSeleccionado(prod)}
-              onMostrarTodos={(cat) => handleAbrirCategoria(cat)} 
-            />
-
-            <SeccionCategoriaHome 
-              titulo="Bebidas e Hidratación"
-              nombreCategoria="almacen"
-              carrito={carrito}
-              onAgregar={agregarItem}
-              onRestar={restarItem}
-              onEliminar={eliminarItem}
-              onAbrirProducto={(id, prod) => setProductoSeleccionado(prod)}
-              onMostrarTodos={(cat) => handleAbrirCategoria(cat)} 
-            />
-          </div>
 
         </div>
 
@@ -374,7 +413,10 @@ function App() {
         tabActiva={tabActiva} 
         setTabActiva={(tab) => {
           setTabActiva(tab);
-          if (tab !== 'inicio') setCategoriaSeleccionada(null);
+          if (tab !== 'inicio'){
+            setCategoriaSeleccionada(null);
+            setTerminoBusquedaActiva(null);
+          } 
         }}
         pedidosActivos={cantidadPedidosActivos}
       />

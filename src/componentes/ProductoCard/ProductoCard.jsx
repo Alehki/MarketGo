@@ -51,7 +51,7 @@ export const ProductoCard = ({
             cantidad={cantidad}
             sinStock={sinStock}
             alcanzoStock={alcanzoStock}
-            onAgregar={() => onAgregar?.(producto.id)}
+            onAgregar={() => onAgregar?.(producto)}
             onRestar={() => onRestar?.(producto.id)}
             onEliminar={() => setMostrarModalEliminar(true)} /* Abre la modal local */
           />

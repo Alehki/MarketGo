@@ -140,3 +140,53 @@
     transform: translateY(0);
   }
 }
+
+/* Nuevo */
+
+/* --- Estilos para la sección de Sugerencias en Tiempo Real --- */
+.seccion-sugerencias {
+  display: flex;
+  flex-direction: column;
+  padding-top: 4px;
+}
+
+.sugerencia-estado {
+  font-size: 15px;
+  color: #64748b;
+  text-align: center;
+  padding: 32px 0;
+  margin: 0;
+}
+
+.lista-sugerencias {
+  display: flex;
+  flex-direction: column;
+}
+
+.item-sugerencia {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 12px; /* 🟢 Más área de padding vertical y horizontal para que no se sientan apretados */
+  border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+  border-radius: 8px; /* 🟢 Sutil borde redondeado al tocar */
+  transition: background-color 0.15s ease;
+}
+
+.item-sugerencia:hover,
+.item-sugerencia:active {
+  background-color: #f8fafc;
+}
+
+.item-sugerencia svg {
+  width: 18px;  /* 🟢 Ícono un poquito más grande y visible */
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.item-sugerencia span {
+  font-size: 16px;       /* 🟢 Letra más legible y cómoda a la vista */
+  font-weight: 450;      /* 🟢 Un toque más de cuerpo para mejor jerarquía */
+  color: #1e293b;
+}

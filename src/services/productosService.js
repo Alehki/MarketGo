@@ -188,3 +188,32 @@ export const obtenerSubcategoriasPorCategoria = async (categoriaId) => {
   
   return data;
 };
+
+// 🟢 Nueva función para buscar productos por texto de forma global (usando tu helper de acentos)
+export async function buscarProductosGlobal(termino) {
+  try {
+    if (!termino || termino.trim() === "") return [];
+
+    // Traemos todos los productos ya cruzados y limpios con tu lógica actual
+    const productos = await obtenerDatosCompletos();
+    const busquedaLimpieza = removerAcentos(termino);
+
+    // Filtramos buscando coincidencias en el nombre, descripción o categoría
+    return productos.filter(p => {
+      const nombre = removerAcentos(p.nombre);
+      const descripcion = removerAcentos(p.descripcion);
+      const categoria = removerAcentos(p.categoria);
+      const subcategoria = removerAcentos(p.subcategoria_nombre);
+
+      return (
+        nombre.includes(busquedaLimpieza) ||
+        descripcion.includes(busquedaLimpieza) ||
+        categoria.includes(busquedaLimpieza) ||
+        subcategoria.includes(busquedaLimpieza)
+      );
+    });
+  } catch (err) {
+    console.error('Excepción en buscarProductosGlobal:', err);
+    return [];
+  }
+}

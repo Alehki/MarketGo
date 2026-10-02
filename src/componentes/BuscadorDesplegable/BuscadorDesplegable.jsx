@@ -7,7 +7,12 @@ export const BuscadorDesplegable = ({
   onClose,
   cantidadCarrito = 0,
   onAbrirCarrito,
-  onSearch
+  onSearch,
+  terminoEscrito,      
+  onTerminoChange,      
+  sugerencias = [],     
+  cargandoSugerencias,  
+  onSelectSugerencia
 }) => {
   const [query, setQuery] = useState('');
   const [historial, setHistorial] = useState([]);
@@ -21,6 +26,27 @@ export const BuscadorDesplegable = ({
     setHistorial(guardados);
   }, []);
 
+  //  Efecto para cerrar el buscador con el botón "Atrás" del celular o navegador
+  useEffect(() => {
+    const handlePopState = () => {
+      if (isOpen) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      // Agregamos una entrada al historial del navegador cuando se abre
+      window.history.pushState({ buscadorAbierto: true }, '');
+      window.addEventListener('popstate', handlePopState);
+    }
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [isOpen, onClose]);
+
+  // 
+
   if (!isOpen) return null;
 
   const handleEjecutarBusqueda = (texto) => {
@@ -31,11 +57,13 @@ export const BuscadorDesplegable = ({
     localStorage.setItem('historial_busquedas', JSON.stringify(nuevoHistorial));
 
     if (onSearch) onSearch(texto);
+
+    onClose();
   };
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
-      handleEjecutarBusqueda(query);
+      handleEjecutarBusqueda(terminoEscrito);
     }
   };
 
@@ -48,7 +76,7 @@ export const BuscadorDesplegable = ({
 
   return (
     <div className="overlay-buscador">
-      {/* Header superior coherente con la App */}
+      {/* Header superior */}
       <div className="buscador-header-top">
         <button type="button" className="btn-flecha-atras" onClick={onClose} aria-label="Volver">
           <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round">
@@ -61,8 +89,8 @@ export const BuscadorDesplegable = ({
           <input
             type="text"
             placeholder="Buscar productos..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            value={terminoEscrito}                               /* 🟢 Usamos el estado global */
+            onChange={(e) => onTerminoChange(e.target.value)}    /* 🟢 Actualizamos App.jsx */
             onKeyDown={handleKeyDown}
             autoFocus
           />
@@ -72,13 +100,14 @@ export const BuscadorDesplegable = ({
           </svg>
         </div>
 
-        {/* Tu componente oficial de Carrito */}
         <CartButton cantidad={cantidadCarrito} onClick={onAbrirCarrito} />
       </div>
 
-      {/* Historial de búsquedas */}
+      {/* Cuerpo dinámico: Historial vs Sugerencias */}
       <div className="buscador-body">
-        {historial.length > 0 && (
+        
+        {/* CASO 1: Si NO está escribiendo nada, muestra el historial */}
+        {!terminoEscrito && historial.length > 0 && (
           <div className="seccion-historial">
             <h3>Tus últimas búsquedas</h3>
             <div className="lista-historial">
@@ -111,6 +140,38 @@ export const BuscadorDesplegable = ({
             </div>
           </div>
         )}
+
+        {/* CASO 2: Si está escribiendo, mostramos las sugerencias de Supabase */}
+        {terminoEscrito && (
+          <div className="seccion-sugerencias">
+            {cargandoSugerencias && <p className="sugerencia-estado">Buscando sugerencias...</p>}
+
+            {!cargandoSugerencias && sugerencias.length === 0 && (
+              <p className="sugerencia-estado">No se encontraron productos sugeridos.</p>
+            )}
+
+            {!cargandoSugerencias && sugerencias.length > 0 && (
+              <div className="lista-sugerencias">
+                {sugerencias.map((prod) => (
+                  <div
+                    key={prod.id}
+                    className="item-sugerencia"
+                    onClick={() => {
+                      if (onSelectSugerencia) onSelectSugerencia(prod.nombre);
+                    }}
+                  >
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="#9ca3af" strokeWidth="2" fill="none">
+                      <circle cx="11" cy="11" r="7" />
+                      <line x1="20" y1="20" x2="16.5" y2="16.5" />
+                    </svg>
+                    <span>{prod.nombre}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
       </div>
     </div>
   );
