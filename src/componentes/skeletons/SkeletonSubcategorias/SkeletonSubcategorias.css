@@ -1,0 +1,59 @@
+/* Contenedor idéntico al wrapper real para conservar márgenes y paddings */
+.skeleton-subcategorias-container {
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: flex-start; /* O center, según cómo lo uses */
+}
+
+/* Área de scroll simulada que respeta el espaciado lateral */
+.skeleton-subcategorias-scroll {
+  display: flex;
+  gap: 8px; /* Coincide con el gap de .subcategorias-pills-scroll */
+  overflow-x: auto;
+  padding: 4px 16px; /* Coincide con el padding lateral real */
+  width: 100%;
+  scrollbar-width: none;
+}
+
+.skeleton-subcategorias-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Píldora esqueleto con medidas exactas y bordes idénticos */
+/* Píldora esqueleto ajustada a la altura exacta de las reales */
+.skeleton-pill {
+  height: 32px;  /* Bajamos un poquito la altura para que coincida con las reales */
+  width: 100px;  /* Ancho ideal para simular texto */
+  border-radius: 20px; 
+  background: #e2e8f0;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0; 
+  border: 1px solid #e9ecef;
+}
+
+/* Efecto de brillo (shimmer) */
+.skeleton-pill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.4) 20%,
+    rgba(255, 255, 255, 0.7) 60%,
+    rgba(255, 255, 255, 0)
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}

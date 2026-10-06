@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ProductoCard } from '../ProductoCard/ProductoCard.jsx';
+import { SkeletonCard } from '../skeletons/SkeletonCard/SkeletonCard.jsx'; // 🟢 Asegúrate de ajustar la ruta si es necesario
 import { 
   obtenerProductosPorCategoria, 
   obtenerProductosDestacados, 
@@ -107,6 +108,12 @@ export const SeccionCategoriaHome = ({
     }
   };
 
+  // Si está cargando, generamos un array fantasma de 4 elementos para el carrusel
+  const cantidadSkeletons = 4;
+  const elementosVisibles = cargando 
+    ? Array.from({ length: cantidadSkeletons }) 
+    : productos;
+
   return (
     <section className="seccion-categoria-home">
       <div className="seccion-header">
@@ -119,25 +126,34 @@ export const SeccionCategoriaHome = ({
       </div>
 
       <div className="carrusel-horizontal-productos">
-        {cargando ? (
-          <p style={{ padding: '1rem', fontSize: '0.9rem' }}>Cargando productos...</p>
-        ) : productos.length === 0 ? (
+        {!cargando && productos.length === 0 ? (
           <p style={{ padding: '1rem', fontSize: '0.9rem', color: '#888' }}>
             No hay productos disponibles en esta categoría.
           </p>
         ) : (
-          productos.map((prod) => (
-            <div key={prod.id} className="item-carrusel-producto">
-              <ProductoCard
-                producto={prod}
-                cantidad={carrito[prod.id]?.cantidad || 0}
-                onAgregar={() => onAgregar(prod)}
-                onRestar={() => onRestar(prod.id)}
-                onEliminar={() => onEliminar(prod.id)}
-                onAbrir={() => onAbrirProducto(prod.id, prod)}
-              />
-            </div>
-          ))
+          elementosVisibles.map((item, index) => {
+            if (cargando) {
+              return (
+                <div key={`skeleton-${index}`} className="item-carrusel-producto">
+                  <SkeletonCard />
+                </div>
+              );
+            }
+
+            const prod = item;
+            return (
+              <div key={prod.id} className="item-carrusel-producto">
+                <ProductoCard
+                  producto={prod}
+                  cantidad={carrito[prod.id]?.cantidad || 0}
+                  onAgregar={() => onAgregar(prod)}
+                  onRestar={() => onRestar(prod.id)}
+                  onEliminar={() => onEliminar(prod.id)}
+                  onAbrir={() => onAbrirProducto(prod.id, prod)}
+                />
+              </div>
+            );
+          })
         )}
       </div>
     </section>

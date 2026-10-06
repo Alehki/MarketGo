@@ -1,0 +1,40 @@
+.skeleton-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  width: 100%;
+}
+
+/* Círculo simulando el ícono de la lupa */
+.skeleton-icon {
+  width: 18px;
+  height: 18px;
+  background-color: #e2e8f0;
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: skeletonPulse 1.5s infinite ease-in-out;
+}
+
+/* Barra simulando el texto del producto */
+.skeleton-text {
+  height: 16px;
+  background-color: #e2e8f0;
+  border-radius: 4px;
+  width: 65%; /* Ancho variable para que se vea natural */
+  animation: skeletonPulse 1.5s infinite ease-in-out;
+}
+
+/* Animación sutil de parpadeo/brillo */
+@keyframes skeletonPulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 1;
+  }
+}

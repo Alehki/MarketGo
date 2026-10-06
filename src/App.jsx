@@ -302,21 +302,18 @@ function App() {
                   onSeleccionarCategoria={handleAbrirCategoria}
                 />
                 
-                {cargandoDestacados ? (
-                  <p style={{ textAlign: 'center', padding: '1rem' }}>Cargando destacados...</p>
-                ) : (
-                  <Destacados 
-                    productos={productosDestacados}
-                    carrito={carrito}
-                    onAgregar={(id, prod) => agregarItem(prod)}
-                    onRestar={(id) => restarItem(id)}
-                    onEliminar={(id) => eliminarItem(id)}
-                    onAbrirProducto={(id) => {
-                      const prod = productosDestacados.find(p => p.id === id);
-                      if (prod) setProductoSeleccionado(prod);
-                    }}
-                  />
-                )}
+                <Destacados 
+                  productos={productosDestacados}
+                  carrito={carrito}
+                  loading={cargandoDestacados}
+                  onAgregar={(id, prod) => agregarItem(prod)}
+                  onRestar={(id) => restarItem(id)}
+                  onEliminar={(id) => eliminarItem(id)}
+                  onAbrirProducto={(id) => {
+                    const prod = productosDestacados.find(p => p.id === id);
+                    if (prod) setProductoSeleccionado(prod);
+                  }}
+                />
 
                 <SeccionBanners 
                   banners={BANNERS_PROMO}
@@ -337,7 +334,7 @@ function App() {
                   onMostrarTodos={(cat) => handleAbrirCategoria(cat)} 
                 />
 
-                <SeccionCategoriaHome 
+                {/* <SeccionCategoriaHome 
                   titulo="Bebidas e Hidratación"
                   nombreCategoria="almacen"
                   carrito={carrito}
@@ -346,7 +343,7 @@ function App() {
                   onEliminar={eliminarItem}
                   onAbrirProducto={(id, prod) => setProductoSeleccionado(prod)}
                   onMostrarTodos={(cat) => handleAbrirCategoria(cat)} 
-                />
+                /> */}
               </div>
             </>
           )}

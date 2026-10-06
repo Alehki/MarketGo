@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CartButton } from '../Header/CartButton/CartButton'; // Ajustá la ruta según tu proyecto
+import { SkeletonItem } from '../skeletons/SkeletonItem/SkeletonItem'; 
 import './BuscadorDesplegable.css';
 
 export const BuscadorDesplegable = ({
@@ -106,7 +107,6 @@ export const BuscadorDesplegable = ({
       {/* Cuerpo dinámico: Historial vs Sugerencias */}
       <div className="buscador-body">
         
-        {/* CASO 1: Si NO está escribiendo nada, muestra el historial */}
         {!terminoEscrito && historial.length > 0 && (
           <div className="seccion-historial">
             <h3>Tus últimas búsquedas</h3>
@@ -144,12 +144,25 @@ export const BuscadorDesplegable = ({
         {/* CASO 2: Si está escribiendo, mostramos las sugerencias de Supabase */}
         {terminoEscrito && (
           <div className="seccion-sugerencias">
-            {cargandoSugerencias && <p className="sugerencia-estado">Buscando sugerencias...</p>}
+            
+            {/* 🟢 1. Si está cargando, mostramos los esqueletos */}
+            {cargandoSugerencias && (
+              <div className="lista-sugerencias">
+                <SkeletonItem />
+                <SkeletonItem />
+                <SkeletonItem />
+                <SkeletonItem />
+                <SkeletonItem />
+                <SkeletonItem />
+              </div>
+            )}
 
+            {/* 🟢 2. Si terminó de cargar y NO hay resultados, mostramos el mensaje */}
             {!cargandoSugerencias && sugerencias.length === 0 && (
               <p className="sugerencia-estado">No se encontraron productos sugeridos.</p>
             )}
 
+            {/* 🟢 3. Si terminó de cargar y SÍ hay resultados, mostramos la lista */}
             {!cargandoSugerencias && sugerencias.length > 0 && (
               <div className="lista-sugerencias">
                 {sugerencias.map((prod) => (

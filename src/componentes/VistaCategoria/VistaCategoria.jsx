@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ProductoCard } from '../ProductoCard/ProductoCard.jsx';
+import { SkeletonCard } from '../skeletons/SkeletonCard/SkeletonCard.jsx';
+import { SkeletonSubcategorias } from '../skeletons/SkeletonSubcategorias/SkeletonSubcategorias.jsx';
 import { 
   obtenerProductosPorCategoria, 
   obtenerProductosDestacados, 
@@ -171,14 +173,18 @@ export const VistaCategoria = ({
         categoriaSeleccionada={categoria}
         onSeleccionarCategoria={onSeleccionarCategoria}
       />
-      {/* Barra de Subcategorías */}
+      {/* Barra de Subcategorías con su propio esqueleto */}
       {!esSeccionDestacados && (
-        <SubcategoriasPills 
-          subcategorias={subcategorias}
-          loading={cargandoSubcategorias}
-          subcategoriaSeleccionada={subcategoriaSeleccionada}
-          onSeleccionarSubcategoria={(subcat) => setSubcategoriaSeleccionada(subcat)}
-        />
+        cargandoSubcategorias ? (
+          <SkeletonSubcategorias />
+        ) : (
+          <SubcategoriasPills 
+            subcategorias={subcategorias}
+            loading={cargandoSubcategorias}
+            subcategoriaSeleccionada={subcategoriaSeleccionada}
+            onSeleccionarSubcategoria={(subcat) => setSubcategoriaSeleccionada(subcat)}
+          />
+        )
       )}
       {/* Header con botón Volver y Título */}
       <div className="categoria-header">
@@ -195,7 +201,14 @@ export const VistaCategoria = ({
       {/* Grilla de Productos */}
       <div className="categoria-body">
         {cargando ? (
-          <p className="mensaje-carga">Cargando productos...</p>
+          <div className="productos-grid">
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
+          </div>
         ) : productosFiltrados.length === 0 ? (
           <p className="mensaje-vacio">No hay productos disponibles en esta sección.</p>
         ) : (
