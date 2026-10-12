@@ -35,7 +35,6 @@
   top: -5px;
   right: -6px;
 
-  background: var(--amarillo-principal);
   color: black;
 
   font-size: 11px;
@@ -43,6 +42,15 @@
 
   padding: 3px 6px;
   border-radius: 999px;
+}
+
+.cart-count-inicio{
+  background: whitesmoke;
+}
+
+
+.cart-count-claro{
+  background: var(--amarillo-principal);
 }
 
 /* Opacidad */

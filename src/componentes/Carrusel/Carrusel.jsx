@@ -1,206 +1,133 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useCallback, useRef, useState } from 'react';
+import useEmblaCarousel from 'embla-carousel-react';
+import { getCarouselSlides } from '../../services/carruselService';
 import './Carrusel.css';
 
-const BASE = import.meta.env.BASE_URL;
-
-const SLIDES = [
-  {
-    id: 1,
-    mobileImg: `${BASE}assets/Carrusel/principal.webp`,
-    desktopImg: `${BASE}assets/Carrusel/banner3-desktop.webp`,
-    title: 'Recibí tu pedido en 10–25 min',
-    subtitle: 'En Hurlingham, Morris y Villa Tesei',
-    contentClass: 'slide-content-1',
-    slideClass: '',
-  },
-  {
-    id: 2,
-    mobileImg: `${BASE}assets/Carrusel/principal2.webp`,
-    desktopImg: `${BASE}assets/Carrusel/principal2.webp`,
-    badge: 'Primera compra',
-    title: 'Envío gratis',
-    subtitle: '+ peluche de regalo',
-    contentClass: 'slide-content-2',
-    slideClass: '',
-  },
-  {
-    id: 3,
-    mobileImg: `${BASE}assets/Carrusel/principal3.webp`,
-    desktopImg: `${BASE}assets/Carrusel/principal3.webp`,
-    title: 'Estamos cerca tuyo',
-    subtitle: 'Hurlingham, Morris y Villa Tesei',
-    contentClass: 'slide-content-3',
-    slideClass: 'slide-3',
-  },
-];
-
-// Array extendido con clon al principio y clon al final: [Último, 1, 2, 3, Primero]
-const EXTENDED_SLIDES = [
-  { ...SLIDES[SLIDES.length - 1], id: 'clone-last' },
-  ...SLIDES,
-  { ...SLIDES[0], id: 'clone-first' }
-];
-
 export const Carrusel = () => {
-  const [currentIndex, setCurrentIndex] = useState(1);
-  const [isTransitioning, setIsTransitioning] = useState(true);
-  
-  const touchStartX = useRef(0);
-  const touchEndX = useRef(0);
+  const [slides, setSlides] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
   const timerRef = useRef(null);
-  const isLockedRef = useRef(false); // Evita superposición de movimientos rápidos
-  const fallbackRef = useRef(null);   // Respaldo por si el navegador ignora el onTransitionEnd
+
+  // Carga inicial de Supabase
+  useEffect(() => {
+    const fetchSlides = async () => {
+      setLoading(true);
+      const data = await getCarouselSlides();
+      setSlides(data);
+      setLoading(false);
+    };
+
+    fetchSlides();
+  }, []);
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
 
   const resetTimer = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
-    
+
     timerRef.current = setInterval(() => {
-      if (!isLockedRef.current) {
-        handleNext();
+      if (!emblaApi) return;
+      if (emblaApi.canScrollNext()) {
+        emblaApi.scrollNext();
+      } else {
+        emblaApi.scrollTo(0);
       }
-    }, 4000);
-  }, []);
+    }, 5000);
+  }, [emblaApi]);
 
-  const handleNext = () => {
-    if (isLockedRef.current) return;
-    isLockedRef.current = true;
-    setIsTransitioning(true);
-    setCurrentIndex((prev) => prev + 1);
-    resetTimer();
-  };
-
-  const handlePrev = () => {
-    if (isLockedRef.current) return;
-    isLockedRef.current = true;
-    setIsTransitioning(true);
-    setCurrentIndex((prev) => prev - 1);
-    resetTimer();
-  };
-
+  // Sincronización con Embla cuando llegan los slides
   useEffect(() => {
+    if (!emblaApi) return;
+
+    emblaApi.reInit();
+    onSelect();
+    emblaApi.on('select', onSelect);
+    emblaApi.on('reInit', onSelect);
+    emblaApi.on('pointerDown', resetTimer);
+
     resetTimer();
+
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
-      if (fallbackRef.current) clearTimeout(fallbackRef.current);
+      if (emblaApi) {
+        emblaApi.off('pointerDown', resetTimer);
+      }
     };
-  }, [resetTimer]);
+  }, [emblaApi, onSelect, resetTimer, slides]);
 
-  // Manejar el salto invisible cuando llega a los extremos (clones)
-  const handleTransitionEnd = () => {
-    isLockedRef.current = false;
-    if (fallbackRef.current) clearTimeout(fallbackRef.current);
-
-    // Si llegó al clon del primer slide (al final del todo)
-    if (currentIndex === EXTENDED_SLIDES.length - 1) {
-      setIsTransitioning(false);
-      setCurrentIndex(1); // Salto instantáneo al slide real número 1
-    }
-    // Si llegó al clon del último slide (al principio del todo)
-    else if (currentIndex === 0) {
-      setIsTransitioning(false);
-      setCurrentIndex(SLIDES.length); // Salto instantáneo al slide real número 3 (último)
-    }
+  const handleDotClick = (index) => {
+    if (!emblaApi) return;
+    emblaApi.scrollTo(index);
+    resetTimer();
   };
 
-  // Fallback de seguridad: Si sales de la categoría y el navegador congela la transición, 
-  // este temporizador destraba el estado automáticamente a los 600ms.
-  useEffect(() => {
-    if (isTransitioning) {
-      if (fallbackRef.current) clearTimeout(fallbackRef.current);
-      fallbackRef.current = setTimeout(() => {
-        if (isLockedRef.current) {
-          handleTransitionEnd();
-        }
-      }, 600);
-    }
-  }, [currentIndex, isTransitioning]);
+  if (loading) {
+    return (
+      <section id="carouselSection" className="carousel-wrapper">
+        <div 
+          className="carousel-container" 
+          style={{ height: '160px', backgroundColor: '#FFD600' }} 
+        />
+      </section>
+    );
+  }
 
-  useEffect(() => {
-    if (!isTransitioning) {
-      const frame = requestAnimationFrame(() => {
-        setIsTransitioning(true);
-      });
-      return () => cancelAnimationFrame(frame);
-    }
-  }, [isTransitioning]);
-
-  const handleTouchStart = (e) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchMove = (e) => {
-    touchEndX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchEnd = () => {
-    if (!touchStartX.current || !touchEndX.current) return;
-    
-    const distance = touchStartX.current - touchEndX.current;
-    const minSwipeDistance = 50;
-
-    if (distance > minSwipeDistance) {
-      handleNext();
-    } else if (distance < -minSwipeDistance) {
-      handlePrev();
-    }
-
-    touchStartX.current = 0;
-    touchEndX.current = 0;
-  };
-
-  // Cálculo del índice real para los puntitos (dots)
-  const getActiveDotIndex = () => {
-    if (currentIndex === 0) return SLIDES.length - 1;
-    if (currentIndex === EXTENDED_SLIDES.length - 1) return 0;
-    return currentIndex - 1;
-  };
+  if (slides.length === 0) return null;
 
   return (
     <section id="carouselSection" className="carousel-wrapper">
-      <div 
-        className="carousel-container"
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
-        <div 
-          className="carousel-track" 
-          onTransitionEnd={handleTransitionEnd}
-          style={{ 
-            transform: `translateX(-${currentIndex * 100}%)`,
-            transition: isTransitioning ? 'transform 0.5s ease-in-out' : 'none' 
-          }}
-        >
-          {EXTENDED_SLIDES.map((slide, index) => (
-            <div key={`${slide.id}-${index}`} className={`slide hero-slide ${slide.slideClass}`}>
-              <picture>
-                <source media="(max-width: 768px)" srcSet={slide.mobileImg} />
-                <img alt={slide.title} src={slide.desktopImg} />
-              </picture>
+      <div className="carousel-container" ref={emblaRef}>
+        <div className="carousel-track">
+          {slides.map((slide, index) => {
+            const isActive = index === selectedIndex;
 
-              <div className={`slide-content ${slide.contentClass}`}>
-                {slide.badge && <span className="badge">{slide.badge}</span>}
-                <h3>{slide.title}</h3>
-                <p>{slide.subtitle}</p>
+            return (
+              <div
+                key={slide.id}
+                className={`slide hero-slide slide-${slide.id} ${isActive ? 'is-active' : ''}`}
+              >
+                <div className="slide-inner">
+                  {/* Contenido / Texto */}
+                  <div className="slide-content">
+                    {slide.badge && <span className="badge">{slide.badge}</span>}
+                    <h3>{slide.title}</h3>
+                    {slide.subtitle && <p>{slide.subtitle}</p>}
+                  </div>
+
+                  {/* Imagen */}
+                  <div className="slide-image-container">
+                    <picture>
+                      {slide.mobile_img_url && (
+                        <source media="(max-width: 768px)" srcSet={slide.mobile_img_url} />
+                      )}
+                      <img
+                        src={slide.desktop_img_url}
+                        alt={slide.title}
+                        className="slide-product-img"
+                      />
+                    </picture>
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
-      {/* Puntos indicadores (Dots) */}
+      {/* Indicadores (Dots) */}
       <div className="dots">
-        {SLIDES.map((_, index) => (
+        {slides.map((_, index) => (
           <button
             key={index}
-            className={`dot ${getActiveDotIndex() === index ? 'active' : ''}`}
-            onClick={() => {
-              if (isLockedRef.current) return;
-              isLockedRef.current = true;
-              setIsTransitioning(true);
-              setCurrentIndex(index + 1);
-              resetTimer();
-            }}
+            className={`dot ${index === selectedIndex ? 'active' : ''}`}
+            onClick={() => handleDotClick(index)}
           />
         ))}
       </div>

@@ -10,11 +10,19 @@
 
 .logo-text .market {
   color: var(--negro);
+  /* color: #0b132b; */
   font-weight: 700;
 }
 
 .logo-text .go {
-  color: var(--amarillo-principal);
   font-weight: 900;
   letter-spacing: -1px;
+}
+
+.logo-text .go-inicio {
+  color: #fff;
+}
+
+.logo-text .go-claro {
+  color: var(--amarillo-principal);
 }

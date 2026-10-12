@@ -224,6 +224,11 @@ function App() {
     window.scrollTo(0, 0);
   };
 
+  // 
+
+  // Variable para pasarla al Header, para cambio de estilo amarillo - blanco.
+  const esInicio = tabActiva === 'inicio' && !categoriaSeleccionada && !terminoBusquedaActiva;
+
   return (
     <div className="app-container">
       <SplashScreen duracion={3200} />
@@ -232,8 +237,8 @@ function App() {
         cantidadCarrito={cantidadTotalItems} 
         onAbrirCarrito={() => setModalCarritoAbierta(true)} 
         onAbrirBuscador={() => setBuscadorAbierto(true)}
+        esInicio={esInicio}
       />
-
       {/* Renderizado condicional del overlay de búsqueda */}
       <BuscadorDesplegable 
         isOpen={buscadorAbierto}
@@ -293,7 +298,7 @@ function App() {
 
               {/* 3. HOME DE SIEMPRE (Se oculta si hay categoría seleccionada) */}
               <div style={{ display: categoriaSeleccionada ? 'none' : 'block' }}>
-                <BarraBeneficios />
+                {/* <BarraBeneficios /> */}
                 <Carrusel />
 
                 <Categorias 

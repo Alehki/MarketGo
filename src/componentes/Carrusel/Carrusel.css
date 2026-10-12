@@ -1,85 +1,86 @@
-/* ================= CARRUSEL PRO ================= */
+/* ================= CARRUSEL PRO (EMBLA) ================= */
 .carousel-wrapper {
   width: 100%;
-  /* margin-top: 10px; */
-  /* padding: 0 10px; */
   box-sizing: border-box;
 }
 
 .carousel-container {
   width: 100%;
-  /* border-radius: var(--radius, 12px); */
-  border-radius: 0px 0px 50px 0px;
+  border-radius: 0px 0px 100px 20px;
   overflow: hidden;
   position: relative;
+  background-color: #FFD600;
+  touch-action: pan-y pinch-zoom;
 }
 
 .carousel-track {
   display: flex;
-  transition: transform 0.5s ease-in-out;
-  width: 100%;
   will-change: transform;
 }
 
+/* Cada slide */
 .slide {
   flex: 0 0 100%;
-  height: 150px;
+  min-width: 0;
+  height: 160px;
   position: relative;
+  box-sizing: border-box;
 }
 
-.slide picture,
-.slide img {
+/* Contenedor interno en 2 columnas */
+.slide-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
   height: 100%;
-  display: block;
-  object-fit: cover;
-  object-position: center 100%;
+  padding: 0 20px;
+  box-sizing: border-box;
 }
 
-.slide-3 img {
-  object-position: center 30%;
+/* ==========================================
+   EFECTO FADE IN SUAVE AL LLEGAR
+   ========================================== */
+.slide .slide-inner {
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
 }
 
-.slide::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 1;
+.slide.is-active .slide-inner {
+  opacity: 1;
 }
+
+/* ==========================================
+   ESTILOS DE CONTENIDO Y TEXTOS
+   ========================================== */
 
 .slide-content {
-  position: absolute;
-  left: 22px;
-  bottom: 22px;
-  z-index: 2;
+  flex: 1;
   display: flex;
   flex-direction: column;
+  justify-content: center; 
   align-items: flex-start;
-  color: #000000;
-}
-
-.slide-content-1 {
-  color: #ffffff;
-}
-
-.slide-content-2,
-.slide-content-3 {
-  top: 40px;
+  color: #0b132b;
+  z-index: 2;
+  padding-left: 5px;
+  /* Agregamos esto para levantar un toque el bloque visualmente */
+  transform: translateY(-10px); 
 }
 
 .slide-content h3 {
-  font-size: 24px;
+  font-size: 22px;
   line-height: 1.05;
   font-weight: 900;
   letter-spacing: -1px;
   margin: 0;
-  max-width: 190px;
+  max-width: 180px;
 }
 
 .slide-content p {
   font-size: 13px;
   margin-top: 4px;
   opacity: 0.9;
+  margin-bottom: 0;
 }
 
 .badge {
@@ -93,30 +94,35 @@
   margin-bottom: 6px;
 }
 
-/* Flechas */
-.arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.4);
-  color: white;
-  border: none;
-  padding: 10px 14px;
-  cursor: pointer;
-  font-size: 18px;
-  border-radius: 50%;
-  transition: background 0.3s ease;
-  z-index: 3;
+/* Contenedor de Imagen */
+.slide-image-container {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
 }
 
-.arrow:hover {
-  background: var(--color-primary, #000);
+.slide-image-container picture {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
-.left { left: 15px; }
-.right { right: 15px; }
+.slide-product-img {
+  max-height: 140px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  display: block;
+  transform: scale(1.2);
+  transform-origin: center center;
+}
 
-/* Puntitos */
+/* Indicadores (Puntitos) */
 .dots {
   display: flex;
   justify-content: center;
@@ -144,3 +150,4 @@
   opacity: 1;
   background-color: var(--amarillo-hover, #f59e0b);
 }
+

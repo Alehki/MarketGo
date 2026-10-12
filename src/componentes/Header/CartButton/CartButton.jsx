@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./CartButton.css";
 
-export function CartButton({ cantidad = 0, onClick }) {
+export function CartButton({ cantidad = 0, onClick, esInicio }) {
   const estaVacio = cantidad === 0;
   
   // Guardamos el tipo de animación activa: 'sumar', 'restar' o null
@@ -56,7 +56,8 @@ export function CartButton({ cantidad = 0, onClick }) {
       </svg>
 
       <span 
-        className={`cart-count ${animacion ? `anim-${animacion}` : ""}`}
+        // className={`cart-count ${animacion ? `anim-${animacion}` : ""}`}
+        className={`cart-count ${animacion ? `anim-${animacion}` : ""} ${esInicio ? 'cart-count-inicio' : 'cart-count-claro'}`}
         onAnimationEnd={() => setAnimacion(null)}
       >
         {cantidad}
