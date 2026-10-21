@@ -1,0 +1,242 @@
+/* ==========================================
+   ORDER SUMMARY FULLSCREEN - ESTILO NATIVO
+   ========================================== */
+
+.order-summary-fullscreen-container {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #f7f8fa;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  animation: slideRight 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Header Superior Fijo */
+.order-summary-header {
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #edf0f3;
+  flex-shrink: 0;
+}
+
+.summary-header-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  color: #2c3e50;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  transition: background-color 0.15s ease;
+}
+
+.summary-header-btn:active {
+  background-color: #f0f2f5;
+}
+
+.summary-header-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+  letter-spacing: -0.2px;
+}
+
+/* Formulario & Scroll Content */
+.order-summary-form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+.order-summary-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Secciones e Inputs */
+.summary-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.section-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #64748b;
+  letter-spacing: 0.5px;
+  margin: 0 0 2px 2px;
+}
+
+.form-group-custom {
+  position: relative;
+  width: 100%;
+}
+
+.input-custom,
+.select-custom {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  color: #1e293b;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-border-box;
+  -webkit-appearance: none;
+}
+
+.input-custom::placeholder {
+  color: #94a3b8;
+}
+
+.input-custom:focus,
+.select-custom:focus {
+  border-color: #fecb00;
+  box-shadow: 0 0 0 3px rgba(254, 203, 0, 0.2);
+}
+
+/* Flecha para el Select */
+.select-wrapper::after {
+  content: '▾';
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+  pointer-events: none;
+  font-size: 0.9rem;
+}
+
+/* Lista de Productos Resumida */
+.summary-items-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 14px 16px;
+  border: 1px solid #edf0f3;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.summary-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.summary-item-nombre {
+  color: #334155;
+  font-weight: 500;
+}
+
+.summary-item-cantidad {
+  color: #64748b;
+  font-weight: 600;
+  font-size: 0.85rem;
+  background-color: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+/* Tarjeta de Totales */
+.summary-totals-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #edf0f3;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.totals-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.totals-divider {
+  height: 1px;
+  background-color: #f1f5f9;
+  margin: 4px 0;
+}
+
+.total-highlight {
+  font-size: 1.1rem;
+  color: #0f172a;
+}
+
+.total-highlight strong {
+  font-weight: 700;
+}
+
+/* Footer Fijo Abajo */
+.order-summary-footer {
+  background-color: #ffffff;
+  padding: 16px 20px 28px 20px;
+  border-top: 1px solid #edf0f3;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.03);
+  flex-shrink: 0;
+}
+
+.summary-submit-btn {
+  background-color: #fecb00; /* Amarillo de MarketGo */
+  color: #1a1a1a;
+  border: none;
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.1s ease, background-color 0.15s ease, opacity 0.15s ease;
+  box-shadow: 0 2px 6px rgba(254, 203, 0, 0.25);
+}
+
+.summary-submit-btn:active:not(:disabled) {
+  transform: scale(0.98);
+  background-color: #e6b800;
+}
+
+.summary-submit-btn:disabled {
+  background-color: #e4e7eb;
+  color: #9aa5b1;
+  box-shadow: none;
+  cursor: not-allowed;
+}

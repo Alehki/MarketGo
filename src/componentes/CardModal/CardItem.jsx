@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ControlesCantidad } from '../ControlesCantidad/ControlesCantidad.jsx';
+import './CardItemFullScreen.css'; // Nuevos estilos limpios
 
 export const CardItem = ({ itemKey, item, onAgregar, onRestar, onPedirEliminar }) => {
   const [startX, setStartX] = useState(0);
@@ -32,11 +33,14 @@ export const CardItem = ({ itemKey, item, onAgregar, onRestar, onPedirEliminar }
   const stockMaximo = item.stock ?? 0;
   const alcanzoStock = stockMaximo > 0 && item.cantidad >= stockMaximo;
 
+  // Detectar si hay imagen en la prop del producto
+  const imagenUrl = item.imagen || item.imagen_url || item.foto;
+
   return (
-    <div className="item-carrito">
+    <div className="item-carrito-container">
       {/* Botón de eliminar detrás del swipe */}
       <div 
-        className="item-eliminar" 
+        className="item-eliminar-bg" 
         onClick={() => onPedirEliminar?.(itemKey, item)}
       >
         🗑
@@ -44,32 +48,50 @@ export const CardItem = ({ itemKey, item, onAgregar, onRestar, onPedirEliminar }
 
       {/* Capa de contenido frontal que se desliza */}
       <div 
-        className="item-contenido"
+        className="item-contenido-card"
         style={{ 
           transform: `translateX(${swipeOffset}px)`, 
-          transition: swipeOffset === 0 || swipeOffset === -60 ? 'transform 0.2s' : 'none' 
+          transition: swipeOffset === 0 || swipeOffset === -60 ? 'transform 0.2s ease-out' : 'none' 
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        <div className="item-info">
-          <strong>
+        {/* Imagen del producto (si existe) */}
+        {imagenUrl && (
+          <div className="item-imagen-wrapper">
+            <img src={imagenUrl} alt={item.nombre} className="item-imagen" />
+          </div>
+        )}
+
+        {/* Info del producto */}
+        <div className="item-info-main">
+          <strong className="item-nombre">
             {item.nombre}
             {item.color ? ` (${item.color})` : ''}
           </strong>
-          <span>{` $${item.precio} x ${item.cantidad}`}</span>
+          
+          <div className="item-precios">
+            <span className="item-precio-unitario">
+              ${item.precio} <small>x {item.cantidad}</small>
+            </span>
+            <span className="item-precio-subtotal">
+              ${(item.precio * item.cantidad).toLocaleString('es-AR')}
+            </span>
+          </div>
         </div>
 
         {/* Controles de Cantidad */}
-        <ControlesCantidad 
-          size="small"
-          cantidad={item.cantidad}
-          alcanzoStock={alcanzoStock}
-          onAgregar={() => onAgregar?.(item, item.color)}
-          onRestar={() => onRestar?.(itemKey)}
-          onEliminar={() => onPedirEliminar?.(itemKey, item)}
-        />
+        <div className="item-controles-wrapper">
+          <ControlesCantidad 
+            size="small"
+            cantidad={item.cantidad}
+            alcanzoStock={alcanzoStock}
+            onAgregar={() => onAgregar?.(item, item.color)}
+            onRestar={() => onRestar?.(itemKey)}
+            onEliminar={() => onPedirEliminar?.(itemKey, item)}
+          />
+        </div>
       </div>
     </div>
   );

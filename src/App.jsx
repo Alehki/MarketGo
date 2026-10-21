@@ -24,10 +24,12 @@ import { CartFloatingBar } from './componentes/CartFloatingBar/CartFloatingBar.j
 import { VistaResultadosBusqueda } from './componentes/vistaResultadosBusqueda/vistaResultadosBusqueda.jsx';
 
 // Modales
-import { CardModal } from "./componentes/CardModal/CardModal.jsx";
+// import { CardModal } from "./componentes/CardModal/CardModal.jsx";
+import { CartFullScreen } from "./componentes/CardModal/CartFullScreen.jsx";
 import { ModalProductoDetalle } from "./componentes/ModalProductoDetalle/ModalProductoDetalle.jsx";
 import { SplashScreen } from './componentes/SplashScreen/SplashScreen.jsx';
-import { ModalResumenPedido } from "./componentes/ModalResumenPedido/ModalResumenPedido.jsx";
+// import { ModalResumenPedido } from "./componentes/ModalResumenPedido/ModalResumenPedido.jsx";
+import { OrderSummaryFullScreen } from "./componentes/ModalResumenPedido/OrderSummaryFullScreen.jsx";
 import { SeccionPedidos } from './componentes/SeccionPedidos/SeccionPedidos.jsx';
 
 
@@ -369,7 +371,19 @@ function App() {
       </main>
 
       {/* Modales */}
-      <CardModal
+      {/* <CardModal
+        isOpen={modalCarritoAbierta}
+        onClose={() => setModalCarritoAbierta(false)}
+        carrito={carrito}
+        total={total}
+        faltaParaMinimo={faltaParaMinimo}
+        cumpleMinimo={cumpleMinimo}
+        onAgregar={agregarItem}
+        onRestar={restarItem}
+        onEliminar={handleEliminarDesdeCarrito}
+        onIrAPagar={handleIrAPagar}
+      /> */}
+      <CartFullScreen
         isOpen={modalCarritoAbierta}
         onClose={() => setModalCarritoAbierta(false)}
         carrito={carrito}
@@ -382,7 +396,17 @@ function App() {
         onIrAPagar={handleIrAPagar}
       />
 
-      <ModalResumenPedido 
+      {/* <ModalResumenPedido 
+        isOpen={modalResumenAbierta}
+        onClose={() => setModalResumenAbierta(false)}
+        onVolver={handleVolverAlCarrito}
+        carrito={carrito}
+        total={total}
+        costoEnvio={900}
+        onEnviarWhatsApp={handleConfirmarPedido}
+      /> */}
+
+      <OrderSummaryFullScreen
         isOpen={modalResumenAbierta}
         onClose={() => setModalResumenAbierta(false)}
         onVolver={handleVolverAlCarrito}
