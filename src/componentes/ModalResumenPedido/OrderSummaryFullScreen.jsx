@@ -15,6 +15,8 @@ export const OrderSummaryFullScreen = ({
   const [referencia, setReferencia] = useState('');
   const [metodoPago, setMetodoPago] = useState('');
   const [mostrarExito, setMostrarExito] = useState(false);
+  // 1. Agregamos un estado para el botón de carga
+  const [cargandoPago, setCargandoPago] = useState(false);
 
   if (!isOpen && !mostrarExito) return null;
 
@@ -27,14 +29,32 @@ export const OrderSummaryFullScreen = ({
 
   const esFormularioValido = direccion.trim() !== '' && metodoPago !== '';
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!esFormularioValido) return;
+    if (!esFormularioValido || cargandoPago) return;
 
-    // 1. Mostrar la animación inmediatamente
+    if (metodoPago === "Mercado Pago") {
+      setCargandoPago(true); // Activamos el estado de carga
+      try {
+        await onEnviarWhatsApp({
+          direccion,
+          referencia,
+          metodoPago,
+          items: itemsCarrito,
+          subtotal,
+          costoEnvio,
+          totalFinal
+        });
+        // Nota: Si redirige exitoso, la página cambia, 
+        // pero por si tarda un segundo más, mantenemos el estado
+      } catch (error) {
+        setCargandoPago(false); // Si hay error, liberamos el botón
+      }
+      return;
+    }
+
+    // --- FLUJO NORMAL (Efectivo / Transferencia) ---
     setMostrarExito(true);
-
-    // 2. Esperar 2.6 segundos para que la animación termine y enviar a WhatsApp
     setTimeout(() => {
       onEnviarWhatsApp({
         direccion,
@@ -46,7 +66,7 @@ export const OrderSummaryFullScreen = ({
         totalFinal
       });
       setMostrarExito(false);
-      onClose(); // Cierra los modales
+      onClose();
     }, 2600);
   };
 
@@ -159,9 +179,9 @@ export const OrderSummaryFullScreen = ({
               <button 
                 type="submit" 
                 className="summary-submit-btn" 
-                disabled={!esFormularioValido}
+                disabled={!esFormularioValido || cargandoPago}
               >
-                Confirmar pedido
+                {cargandoPago ? "Conectando con Mercado Pago..." : "Confirmar pedido"}
               </button>
             </footer>
           </form>

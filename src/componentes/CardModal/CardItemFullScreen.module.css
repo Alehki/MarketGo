@@ -2,7 +2,7 @@
    CARD ITEM - DISEÑO LIMPIO Y DELICADO
    ========================================== */
 
-.item-carrito-container {
+.itemCarritoContainer {
   position: relative;
   width: 100%;
   border-radius: 12px;
@@ -10,7 +10,7 @@
   background-color: #e53e3e; /* Rojo sobrio para acción de borrar */
 }
 
-.item-eliminar-bg {
+.itemEliminarBg {
   position: absolute;
   right: 0;
   top: 0;
@@ -25,7 +25,7 @@
   user-select: none;
 }
 
-.item-contenido-card {
+.itemContenidoCard {
   position: relative;
   background-color: #ffffff;
   padding: 12px 14px;
@@ -39,7 +39,7 @@
 }
 
 /* Thumbnail suave */
-.item-imagen-wrapper {
+.itemImagenWrapper {
   width: 52px;
   height: 52px;
   flex-shrink: 0;
@@ -52,14 +52,14 @@
   border: 1px solid #f1f5f9;
 }
 
-.item-imagen {
+.itemImagen {
   width: 100%;
   height: 100%;
   object-fit: contain;
 }
 
 /* Tipografía y Espaciado Delicado */
-.item-info-main {
+.itemInfoMain {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -67,7 +67,7 @@
   min-width: 0;
 }
 
-.item-nombre {
+.itemNombre {
   font-size: 0.9rem;
   font-weight: 600;
   color: #1e293b;
@@ -77,72 +77,24 @@
   letter-spacing: -0.1px;
 }
 
-.item-precios {
+.itemPrecios {
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-.item-precio-unitario {
+.itemPrecioUnitario {
   font-size: 0.8rem;
   color: #64748b;
   font-weight: 400;
 }
 
-.item-precio-subtotal {
+.itemPrecioSubtotal {
   font-size: 0.88rem;
   font-weight: 600;
   color: #0f172a;
 }
 
-.item-controles-wrapper {
+.itemControlesWrapper {
   flex-shrink: 0;
-}
-
-/* ==========================================
-   WRAPPER CON DESPLIEGUE Y FADE SUAVE (ENTRADA Y SALIDA)
-   ========================================== */
-
-.cart-alert-wrapper {
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-  transform: translateY(-8px);
-  /* Transición fluida para apertura y cierre */
-  transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-              opacity 0.28s ease,
-              transform 1s ease,
-              margin 0.3s ease;
-  margin-bottom: 0;
-}
-
-/* Estado cuando la alerta está ACTIVA (se despliega suavemente) */
-.cart-alert-wrapper.visible {
-  max-height: 70px; /* Altura máxima para permitir que se vea el cartel sin cortar nada */
-  opacity: 1;
-  transform: translateY(0);
-  margin-bottom: 8px;
-}
-
-/* Estilo visual de la caja de alerta */
-.cart-alert-box {
-  background-color: #fff9eb;
-  color: #b47d00;
-  padding: 10px 16px;
-  border-radius: 10px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  text-align: center;
-  border: 1px solid #fce8b3;
-  letter-spacing: -0.1px;
-}
-
-.cart-alert-box p {
-  margin: 0;
-}
-
-.cart-alert-box.closed {
-  background-color: #fdf2f2;
-  color: #9b2c2c;
-  border-color: #f8d7da;
 }

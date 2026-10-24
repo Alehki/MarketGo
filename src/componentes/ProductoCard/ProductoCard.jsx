@@ -22,7 +22,7 @@ export const ProductoCard = ({
     onEliminar?.(producto.id);
     setMostrarModalEliminar(false);
   };
-  console.log("Objeto producto completo:", producto);
+  // console.log("Objeto producto completo:", producto);
   return (
     <>
       <div 

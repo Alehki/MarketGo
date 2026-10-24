@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ControlesCantidad } from '../ControlesCantidad/ControlesCantidad.jsx';
-import './CardItemFullScreen.css'; // Nuevos estilos limpios
+import styles from './CardItemFullScreen.module.css'; // Importación como CSS Module
 
 export const CardItem = ({ itemKey, item, onAgregar, onRestar, onPedirEliminar }) => {
   const [startX, setStartX] = useState(0);
@@ -37,10 +37,10 @@ export const CardItem = ({ itemKey, item, onAgregar, onRestar, onPedirEliminar }
   const imagenUrl = item.imagen || item.imagen_url || item.foto;
 
   return (
-    <div className="item-carrito-container">
+    <div className={styles.itemCarritoContainer}>
       {/* Botón de eliminar detrás del swipe */}
       <div 
-        className="item-eliminar-bg" 
+        className={styles.itemEliminarBg} 
         onClick={() => onPedirEliminar?.(itemKey, item)}
       >
         🗑
@@ -48,7 +48,7 @@ export const CardItem = ({ itemKey, item, onAgregar, onRestar, onPedirEliminar }
 
       {/* Capa de contenido frontal que se desliza */}
       <div 
-        className="item-contenido-card"
+        className={styles.itemContenidoCard}
         style={{ 
           transform: `translateX(${swipeOffset}px)`, 
           transition: swipeOffset === 0 || swipeOffset === -60 ? 'transform 0.2s ease-out' : 'none' 
@@ -59,30 +59,30 @@ export const CardItem = ({ itemKey, item, onAgregar, onRestar, onPedirEliminar }
       >
         {/* Imagen del producto (si existe) */}
         {imagenUrl && (
-          <div className="item-imagen-wrapper">
-            <img src={imagenUrl} alt={item.nombre} className="item-imagen" />
+          <div className={styles.itemImagenWrapper}>
+            <img src={imagenUrl} alt={item.nombre} className={styles.itemImagen} />
           </div>
         )}
 
         {/* Info del producto */}
-        <div className="item-info-main">
-          <strong className="item-nombre">
+        <div className={styles.itemInfoMain}>
+          <strong className={styles.itemNombre}>
             {item.nombre}
             {item.color ? ` (${item.color})` : ''}
           </strong>
           
-          <div className="item-precios">
-            <span className="item-precio-unitario">
+          <div className={styles.itemPrecios}>
+            <span className={styles.itemPrecioUnitario}>
               ${item.precio} <small>x {item.cantidad}</small>
             </span>
-            <span className="item-precio-subtotal">
+            <span className={styles.itemPrecioSubtotal}>
               ${(item.precio * item.cantidad).toLocaleString('es-AR')}
             </span>
           </div>
         </div>
 
         {/* Controles de Cantidad */}
-        <div className="item-controles-wrapper">
+        <div className={styles.itemControlesWrapper}>
           <ControlesCantidad 
             size="small"
             cantidad={item.cantidad}

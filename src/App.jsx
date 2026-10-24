@@ -8,6 +8,7 @@ import { useSugerenciasBusqueda } from './hooks/useSugerenciasBusqueda';
 // Servicios
 import { obtenerProductosDestacados, suscribirseAProductos } from './services/productosService';
 import { crearPedido, obtenerPedidosCliente, suscribirseAPedidos } from './services/pedidosServices.js'; // <-- Importamos los servicios de pedidos
+import { crearPreferenciaMercadoPago } from './services/mercadoPagoService.js';
 
 // Componentes generales
 import { Header } from "./componentes/Header/Header.jsx";
@@ -115,26 +116,58 @@ function App() {
   }, []);
 
   // Crear o hacer pedido
+  // const handleConfirmarPedido = async (datosCliente) => {
+  //   try {
+  //     // 1. Llama a tu función RPC de Supabase
+  //     await crearPedido(carrito, datosCliente);
+
+  //     // 2. Cierra la modal
+  //     setModalResumenAbierta(false);
+
+  //     // 3. Limpia el carrito
+  //     if (vaciarCarrito) vaciarCarrito();
+
+  //     // 4. Actualizamos el contador de forma inmediata
+  //     await actualizarContadorGlobalPedidos();
+
+  //     // 5. Te redirige a la solapa de pedidos
+  //     setTabActiva('pedidos');
+
+  //   } catch (error) {
+  //     console.error("Error al guardar el pedido:", error);
+  //     alert("Ocurrió un problema al procesar el pedido. Intentá nuevamente.");
+  //   }
+  // };
   const handleConfirmarPedido = async (datosCliente) => {
     try {
-      // 1. Llama a tu función RPC de Supabase
-      await crearPedido(carrito, datosCliente);
+      console.log("1. Iniciando proceso de pedido...");
+      const seleccionPago = datosCliente?.metodoPago || "";
+      const metodoLimpio = seleccionPago.toLowerCase().trim();
 
-      // 2. Cierra la modal
-      setModalResumenAbierta(false);
+      const listaCarrito = carrito ? Object.values(carrito) : [];
 
-      // 3. Limpia el carrito
-      if (vaciarCarrito) vaciarCarrito();
+      if (metodoLimpio.includes('mercado') || metodoLimpio === 'mercadopago') {
+        console.log("3. Entró al IF de Mercado Pago. Invocando servicio...");
 
-      // 4. Actualizamos el contador de forma inmediata
-      await actualizarContadorGlobalPedidos();
+        // Llamamos a nuestro servicio modularizado
+        const data = await crearPreferenciaMercadoPago(listaCarrito, datosCliente);
 
-      // 5. Te redirige a la solapa de pedidos
-      setTabActiva('pedidos');
+        console.log("5. ¡Link obtenido con éxito! Redirigiendo a:", data.init_point);
+        // 🟢 Nota: El carrito NO se vacía acá porque el usuario recién va a pagar a la pasarela externa.
+        window.location.href = data.init_point;
+
+      } else {
+        console.log("Entró por el flujo de efectivo habitual");
+        await crearPedido(listaCarrito, datosCliente);
+        setModalResumenAbierta(false);
+        if (vaciarCarrito) vaciarCarrito();
+        await actualizarContadorGlobalPedidos();
+        setTabActiva('pedidos');
+      }
 
     } catch (error) {
-      console.error("Error al guardar el pedido:", error);
-      alert("Ocurrió un problema al procesar el pedido. Intentá nuevamente.");
+      console.error("Error crítico en handleConfirmarPedido:", error);
+      alert(error.message || "Ocurrió un problema al procesar el pedido. Intentá nuevamente.");
     }
   };
 

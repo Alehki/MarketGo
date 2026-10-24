@@ -24,6 +24,7 @@ export async function obtenerPedidosCliente() {
     .from("pedidos")
     .select("*")
     .eq("cliente_id", clienteId)
+    .neq("estado", "esperando_pago")
     .order("id", { ascending: false });
 
   if (error) {
@@ -62,6 +63,7 @@ export function suscribirseAPedidos(callback) {
         filter: `cliente_id=eq.${clienteId}`
       },
       (payload) => {
+        console.log("¡Evento recibido de Supabase Realtime!", payload);
         clearTimeout(timeout);
         timeout = setTimeout(() => {
           callback(payload);

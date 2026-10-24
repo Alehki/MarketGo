@@ -1,7 +1,7 @@
 import React from 'react';
 import { ProductoCard } from '../ProductoCard/ProductoCard.jsx';
-import { SkeletonCard } from '../skeletons/SkeletonCard/SkeletonCard.jsx'; // 🟢 Ajusta esta ruta si es necesario
-import './Destacados.css';
+import { SkeletonCard } from '../skeletons/SkeletonCard/SkeletonCard.jsx';
+import styles from './Destacados.module.css'; // Importación modular
 
 export const Destacados = ({ 
   productos = [], 
@@ -10,7 +10,7 @@ export const Destacados = ({
   onRestar, 
   onEliminar,
   onAbrirProducto,
-  loading = false // 🟢 Recibe la prop
+  loading = false
 }) => {
   // Si está cargando, creamos 4 elementos fantasmas para la cinta
   const cantidadSkeletons = 4;
@@ -24,21 +24,21 @@ export const Destacados = ({
   }
 
   return (
-    <section className="seccion-destacados">
+    <section className={styles.seccionDestacados}>
       {/* Caja amarilla de fondo */}
-      <div className="caja-amarilla-fondo" />
+      <div className={styles.cajaAmarillaFondo} />
 
       {/* Capa de contenido por encima */}
-      <div className="capa-contenido">
-        <h2 className="titulo-seccion">Destacados</h2>
+      <div className={styles.capaContenido}>
+        <h2 className={styles.tituloSeccion}>Destacados</h2>
 
-        <div className="cinta-scroll">
+        <div className={styles.cintaScroll}>
           {elementosVisibles.map((item, index) => {
             if (loading) {
               return (
                 <SkeletonCard 
                   key={`skeleton-destacado-${index}`} 
-                  className="card-destacado" // 👈 Mantiene el ancho fijo de 145px en la cinta
+                  className={styles.cardDestacado} // Ancho fijo de 145px en la cinta
                 />
               );
             }
@@ -51,7 +51,7 @@ export const Destacados = ({
                 key={producto.id}
                 producto={producto}
                 cantidad={cantidad}
-                className="card-destacado"
+                className={styles.cardDestacado}
                 onAgregar={() => onAgregar(producto.id, producto)}
                 onRestar={() => onRestar(producto.id)}
                 onEliminar={() => onEliminar(producto.id)}

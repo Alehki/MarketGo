@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { CardItem } from './CardItem.jsx';
 import { ModalEliminar } from '../ModalEliminar/ModalEliminar.jsx';
-import './CartFullScreen.css'; // Nuevos estilos dedicados
+import styles from './CartFullScreen.module.css';
 
 export const CartFullScreen = ({
   isOpen,
@@ -14,14 +14,13 @@ export const CartFullScreen = ({
   onRestar,
   onEliminar,
   onIrAPagar,
-  estadoTienda = 'abierto' // 'abierto', 'cerrado'
+  estadoTienda = 'abierto'
 }) => {
   const [itemAEliminar, setItemAEliminar] = useState(null);
 
-  // Referencia para congelar el último monto positivo antes de la animación de cierre
+  // Referencia para congelar el último monto positivo antes de ocultar o cerrar
   const ultimoFaltaParaMinimoRef = useRef(faltaParaMinimo);
 
-  // Si faltaParaMinimo es mayor a 0, actualizamos el valor guardado
   if (faltaParaMinimo > 0) {
     ultimoFaltaParaMinimoRef.current = faltaParaMinimo;
   }
@@ -43,27 +42,30 @@ export const CartFullScreen = ({
 
   const estaBotonDeshabilitado = !cumpleMinimo || estadoTienda === 'cerrado' || entries.length === 0;
 
-  // Definimos la variable que decide si muestra el valor actual o el congelado
+  // Mostramos el monto positivo real o el valor congelado previo
   const montoAMostrar = faltaParaMinimo > 0 ? faltaParaMinimo : ultimoFaltaParaMinimoRef.current;
 
+  // Condición estricta: Mostrar alerta solo si la tienda está cerrada O si hay productos y NO se cumple el mínimo
+  const mostrarAlerta = estadoTienda === 'cerrado' || (entries.length > 0 && !cumpleMinimo);
+
   return (
-    <div className="cart-fullscreen-container">
-      {/* Header Superior con botón de cierre (flecha o cruz) y título */}
-      <header className="cart-fullscreen-header">
-        <button className="cart-back-btn" onClick={onClose} aria-label="Volver">
+    <div className={styles.cartFullscreenContainer}>
+      {/* Header Superior */}
+      <header className={styles.cartFullscreenHeader}>
+        <button className={styles.cartBackBtn} onClick={onClose} aria-label="Volver">
           ✕
         </button>
-        <h2 className="cart-fullscreen-title">Tu carrito</h2>
-        <div className="cart-header-spacer"></div> {/* Para equilibrar el espacio */}
+        <h2 className={styles.cartFullscreenTitle}>Tu carrito</h2>
+        <div className={styles.cartHeaderSpacer}></div>
       </header>
 
-      {/* Contenido principal con scroll */}
-      <div className="cart-fullscreen-body">
+      {/* Cuerpo principal con scroll */}
+      <div className={styles.cartFullscreenBody}>
         {/* Lista de productos */}
-        <div className="cart-fullscreen-items">
+        <div className={styles.cartFullscreenItems}>
           {entries.length === 0 ? (
-            <div className="cart-fullscreen-empty">
-              <span className="empty-icon">🛒</span>
+            <div className={styles.cartFullscreenEmpty}>
+              <span className={styles.emptyIcon}>🛒</span>
               <p>Tu carrito está vacío</p>
             </div>
           ) : (
@@ -80,29 +82,29 @@ export const CartFullScreen = ({
           )}
         </div>
 
-        {/* Mensaje condicional con contenedor animado (Entrada y Salida suave) */}
-        <div className={`cart-alert-wrapper ${((!cumpleMinimo && entries.length > 0) || estadoTienda === 'cerrado') ? 'visible' : ''}`}>
+        {/* Mensaje condicional animado */}
+        <div className={`${styles.cartAlertWrapper} ${mostrarAlerta ? styles.visible : ''}`}>
           {estadoTienda === 'cerrado' ? (
-            <div className="cart-alert-box closed">
+            <div className={`${styles.cartAlertBox} ${styles.closed}`}>
               <p>Estamos cerrados 🕒</p>
             </div>
           ) : (
-            <div className="cart-alert-box warning">
+            <div className={`${styles.cartAlertBox} ${styles.warning}`}>
               <p>Agregá ${montoAMostrar} más para poder pedir</p>
             </div>
           )}
         </div>
       </div>
 
-      {/* Footer Fijo Abajo con Resumen y Botón de Pago */}
-      <footer className="cart-fullscreen-footer">
-        <div className="cart-summary-row">
+      {/* Footer Fijo Abajo */}
+      <footer className={styles.cartFullscreenFooter}>
+        <div className={styles.cartSummaryRow}>
           <span>Subtotal</span>
-          <span className="cart-summary-total-price">${total}</span>
+          <span className={styles.cartSummaryTotalPrice}>${total}</span>
         </div>
 
         <button
-          className="cart-checkout-btn"
+          className={styles.cartCheckoutBtn}
           disabled={estaBotonDeshabilitado}
           onClick={onIrAPagar}
         >
@@ -110,13 +112,13 @@ export const CartFullScreen = ({
         </button>
       </footer>
 
-      {/* Modal de confirmación para eliminar (se mantiene intacto) */}
+      {/* Modal de confirmación */}
       <ModalEliminar
         isOpen={Boolean(itemAEliminar)}
         nombreProducto={itemAEliminar?.item?.nombre}
         onClose={() => setItemAEliminar(null)}
         onConfirm={confirmarEliminacion}
       />
-  </div>
+    </div>
   );
 };

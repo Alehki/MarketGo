@@ -1,50 +1,50 @@
 /* Contenedor relativo global */
-.seccion-destacados {
+.seccionDestacados {
   position: relative;
   width: 100%;
   padding: 16px 0;
   overflow: hidden; /* Evita que la pantalla principal tenga scroll horizontal */
 }
 
-.caja-amarilla-fondo {
+.cajaAmarillaFondo {
   position: absolute;
   top: 16px;
   bottom: 16px;
   left: 16px;
   right: 16px;
   /* Degradado que funde el amarillo suave con transparencia */
-  background: linear-gradient(180deg, var(--amarillo-suave) 0%, rgba(255, 255, 255, 0.2) 100%);
+  background: linear-gradient(180deg, var(--amarillo-suave, #fef08a) 0%, rgba(255, 255, 255, 0.2) 100%);
   border-radius: 20px;
   z-index: 1;
 }
 
 /* CAPA CONTENIDO: Flota arriba del amarillo y abarca todo el ancho */
-.capa-contenido {
+.capaContenido {
   position: relative;
   z-index: 2;
   padding: 20px 0;
 }
 
-.titulo-seccion {
-  font-size: 23 px;
+.tituloSeccion {
+  font-size: 23px; /* Corregido el espacio en px */
   font-weight: 800;
   color: #1f2937;
   /* 16px de la caja amarilla + 16px de margen interno = 32px para alinear perfecto */
   margin: 0 0 16px 32px; 
 }
 
-.mensaje-estado {
+.mensajeEstado {
   font-size: 14px;
   color: #1f2937;
   margin: 0 0 12px 32px;
 }
 
-.mensaje-estado.error {
+.mensajeEstado.error {
   color: #dc2626;
 }
 
 /* CINTA DE SCROLL: Tiene vía libre total de 0 a 100% del ancho de la pantalla */
-.cinta-scroll {
+.cintaScroll {
   display: flex;
   gap: 12px;
   overflow-x: auto;
@@ -56,15 +56,14 @@
   padding-bottom: 4px;
 
   scroll-snap-type: x mandatory;
-  /* -webkit-overflow-scrolling: touch; */
   margin-left: 30px;
 }
 
-.cinta-scroll::-webkit-scrollbar {
+.cintaScroll::-webkit-scrollbar {
   display: none;
 }
 
-.card-destacado {
+.cardDestacado {
   min-width: 145px;
   max-width: 145px;
   flex: 0 0 auto;

@@ -1,5 +1,5 @@
 import React from 'react';
-import './ControlesCantidad.css';
+import styles from './ControlesCantidad.module.css';
 
 export const ControlesCantidad = ({
   cantidad = 0,
@@ -11,14 +11,14 @@ export const ControlesCantidad = ({
   size = 'normal', // 'normal' | 'small'
   className = ''
 }) => {
-  const sizeClass = size === 'small' ? 'is-small' : '';
+  const sizeClass = size === 'small' ? styles.isSmall : '';
 
   return (
-    <div className={`controles-cantidad ${sizeClass} ${className}`.trim()}>
+    <div className={`${styles.controlesCantidad} ${sizeClass} ${className}`.trim()}>
       {cantidad === 0 ? (
         <button 
           type="button"
-          className="btn-agregar"
+          className={styles.btnAgregar}
           disabled={sinStock || alcanzoStock}
           onClick={(e) => {
             e.stopPropagation();
@@ -28,11 +28,11 @@ export const ControlesCantidad = ({
           {sinStock ? 'Sin stock' : alcanzoStock ? 'Máximo' : 'Agregar'}
         </button>
       ) : (
-        <div className="selector-cantidad">
+        <div className={styles.selectorCantidad}>
           {cantidad === 1 ? (
             <button 
               type="button"
-              className="btn-icon danger" 
+              className={`${styles.btnIcon} ${styles.danger}`} 
               title="Eliminar del carrito"
               onClick={(e) => {
                 e.stopPropagation();
@@ -46,7 +46,7 @@ export const ControlesCantidad = ({
           ) : (
             <button 
               type="button"
-              className="btn-icon" 
+              className={styles.btnIcon} 
               title="Restar uno"
               onClick={(e) => {
                 e.stopPropagation();
@@ -59,11 +59,11 @@ export const ControlesCantidad = ({
             </button>
           )}
 
-          <span className="cantidad-num">{cantidad}</span>
+          <span className={styles.cantidadNum}>{cantidad}</span>
 
           <button 
             type="button"
-            className="btn-icon primary" 
+            className={`${styles.btnIcon} ${styles.primary}`} 
             disabled={alcanzoStock}
             title="Sumar uno"
             onClick={(e) => {
